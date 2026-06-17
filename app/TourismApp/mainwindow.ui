@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTableView" name="hotelsTableView">
+   <widget class="QTableView" name="packagesTableView">
     <property name="geometry">
      <rect>
       <x>0</x>

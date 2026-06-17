@@ -7,18 +7,17 @@
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QAbstractItemView>
-#include <QAbstractItemView>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , m_hotelsModel(new QSqlQueryModel(this))
+    , m_packagesModel(new QSqlQueryModel(this))
 {
     ui->setupUi(this);
 
     setWindowTitle("Информационная система туристической компании");
 
-    loadHotels();
+    loadTravelPackages();
 }
 
 MainWindow::~MainWindow()
@@ -26,40 +25,43 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::loadHotels()
+void MainWindow::loadTravelPackages()
 {
-    m_hotelsModel->setQuery(
+    m_packagesModel->setQuery(
         "SELECT "
-        "h.id_hotel, "
+        "tp.id_package, "
         "h.hotel_name, "
         "c.country_name, "
-        "h.hotel_class, "
-        "h.hotel_address "
-        "FROM hotels h "
+        "tp.duration_days, "
+        "tp.base_price, "
+        "tp.conditions "
+        "FROM travel_packages tp "
+        "JOIN hotels h ON tp.id_hotel = h.id_hotel "
         "JOIN countries c ON h.id_country = c.id_country "
-        "ORDER BY h.id_hotel",
+        "ORDER BY tp.id_package",
         DatabaseManager::instance().database()
         );
 
-    if (m_hotelsModel->lastError().isValid()) {
+    if (m_packagesModel->lastError().isValid()) {
         QMessageBox::critical(
             this,
             "Ошибка загрузки данных",
-            "Не удалось загрузить список отелей:\n" +
-                m_hotelsModel->lastError().text()
+            "Не удалось загрузить список путевок:\n" +
+                m_packagesModel->lastError().text()
             );
         return;
     }
 
-    m_hotelsModel->setHeaderData(0, Qt::Horizontal, "ID");
-    m_hotelsModel->setHeaderData(1, Qt::Horizontal, "Название отеля");
-    m_hotelsModel->setHeaderData(2, Qt::Horizontal, "Страна");
-    m_hotelsModel->setHeaderData(3, Qt::Horizontal, "Класс");
-    m_hotelsModel->setHeaderData(4, Qt::Horizontal, "Адрес");
+    m_packagesModel->setHeaderData(0, Qt::Horizontal, "ID");
+    m_packagesModel->setHeaderData(1, Qt::Horizontal, "Отель");
+    m_packagesModel->setHeaderData(2, Qt::Horizontal, "Страна");
+    m_packagesModel->setHeaderData(3, Qt::Horizontal, "Дней");
+    m_packagesModel->setHeaderData(4, Qt::Horizontal, "Стоимость");
+    m_packagesModel->setHeaderData(5, Qt::Horizontal, "Условия");
 
-    ui->hotelsTableView->setModel(m_hotelsModel);
-    ui->hotelsTableView->resizeColumnsToContents();
-    ui->hotelsTableView->horizontalHeader()->setStretchLastSection(true);
-    ui->hotelsTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui->hotelsTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->packagesTableView->setModel(m_packagesModel);
+    ui->packagesTableView->resizeColumnsToContents();
+    ui->packagesTableView->horizontalHeader()->setStretchLastSection(true);
+    ui->packagesTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->packagesTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }

@@ -19,11 +19,11 @@ public:
     ~MainWindow();
 
 private:
-    void loadHotels();
+    void loadTravelPackages();
 
 private:
     Ui::MainWindow *ui;
-    QSqlQueryModel *m_hotelsModel;
+    QSqlQueryModel *m_packagesModel;
 };
 
 #endif // MAINWINDOW_H
