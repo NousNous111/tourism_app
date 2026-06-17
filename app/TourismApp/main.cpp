@@ -4,6 +4,7 @@
 
 #include <QApplication>
 #include <QMessageBox>
+#include <QDialog>
 
 int main(int argc, char *argv[])
 {
@@ -25,7 +26,12 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-    MainWindow w;
+    MainWindow w(
+        loginWindow.userId(),
+        loginWindow.clientId(),
+        loginWindow.userRole()
+        );
+
     w.show();
 
     return QApplication::exec();

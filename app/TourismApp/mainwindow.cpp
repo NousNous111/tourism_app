@@ -11,10 +11,13 @@
 #include <QModelIndex>
 #include <QPushButton>
 
-MainWindow::MainWindow(QWidget *parent)
+MainWindow::MainWindow(int userId, int clientId, const QString &userRole, QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , m_packagesModel(new QSqlQueryModel(this))
+    , m_userId(userId)
+    , m_clientId(clientId)
+    , m_userRole(userRole)
 {
     ui->setupUi(this);
 
@@ -26,12 +29,26 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->interestButton, &QPushButton::clicked,
             this, &MainWindow::onInterestButtonClicked);
 
+    configureInterfaceByRole();
     loadTravelPackages();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::configureInterfaceByRole()
+{
+    if (m_userRole == "admin") {
+        ui->interestButton->setEnabled(false);
+        ui->interestButton->setText("Недоступно для администратора");
+        setWindowTitle("Панель администратора туристической компании");
+    } else {
+        ui->interestButton->setEnabled(true);
+        ui->interestButton->setText("Заинтересовался");
+        setWindowTitle("Кабинет клиента туристической компании");
+    }
 }
 
 void MainWindow::loadTravelPackages()
@@ -82,6 +99,24 @@ void MainWindow::onRefreshButtonClicked()
 
 void MainWindow::onInterestButtonClicked()
 {
+    if (m_userRole == "admin") {
+        QMessageBox::warning(
+            this,
+            "Ограничение доступа",
+            "Администратор не может добавлять путевки в список интересующих."
+            );
+        return;
+    }
+
+    if (m_clientId <= 0) {
+        QMessageBox::warning(
+            this,
+            "Ошибка пользователя",
+            "Для текущего пользователя не найден клиентский профиль."
+            );
+        return;
+    }
+
     QModelIndex currentIndex = ui->packagesTableView->currentIndex();
 
     if (!currentIndex.isValid()) {
@@ -96,10 +131,6 @@ void MainWindow::onInterestButtonClicked()
     int row = currentIndex.row();
     int packageId = m_packagesModel->data(m_packagesModel->index(row, 0)).toInt();
 
-    // Временно используем тестового клиента.
-    // После реализации авторизации здесь будет id текущего клиента.
-    int clientId = 1;
-
     QSqlQuery query(DatabaseManager::instance().database());
     query.prepare(
         "INSERT INTO interested_packages (id_client, id_package) "
@@ -107,7 +138,7 @@ void MainWindow::onInterestButtonClicked()
         "ON CONFLICT (id_client, id_package) DO NOTHING"
         );
 
-    query.bindValue(":id_client", clientId);
+    query.bindValue(":id_client", m_clientId);
     query.bindValue(":id_package", packageId);
 
     if (!query.exec()) {
