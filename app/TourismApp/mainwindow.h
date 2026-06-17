@@ -23,6 +23,7 @@ private slots:
     void onRefreshButtonClicked();
     void onInterestButtonClicked();
     void onOrderButtonClicked();
+    void onMyOrdersButtonClicked();
 
 private:
     void loadTravelPackages();

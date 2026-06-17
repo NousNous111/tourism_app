@@ -42,12 +42,38 @@
      <rect>
       <x>120</x>
       <y>10</y>
-      <width>100</width>
+      <width>131</width>
       <height>32</height>
      </rect>
     </property>
     <property name="text">
      <string>Заинтересовался</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="orderButton">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>10</y>
+      <width>131</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Оформить заказ</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="myOrdersButton">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>10</y>
+      <width>100</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Мои заказы</string>
     </property>
    </widget>
   </widget>

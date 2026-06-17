@@ -1,7 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "database/databasemanager.h"
+#include "myorderswindow.h"
 
+#include <QSqlDatabase>
 #include <QSqlQueryModel>
 #include <QSqlQuery>
 #include <QSqlError>
@@ -38,6 +40,9 @@ MainWindow::MainWindow(int userId, int clientId, const QString &userRole, QWidge
     connect(ui->orderButton, &QPushButton::clicked,
             this, &MainWindow::onOrderButtonClicked);
 
+    connect(ui->myOrdersButton, &QPushButton::clicked,
+            this, &MainWindow::onMyOrdersButtonClicked);
+
     configureInterfaceByRole();
     loadTravelPackages();
 }
@@ -56,6 +61,9 @@ void MainWindow::configureInterfaceByRole()
         ui->orderButton->setEnabled(false);
         ui->orderButton->setText("Заказ недоступен");
 
+        ui->myOrdersButton->setEnabled(false);
+        ui->myOrdersButton->setText("Заказы клиента недоступны");
+
         setWindowTitle("Панель администратора туристической компании");
     } else {
         ui->interestButton->setEnabled(true);
@@ -63,6 +71,9 @@ void MainWindow::configureInterfaceByRole()
 
         ui->orderButton->setEnabled(true);
         ui->orderButton->setText("Оформить заказ");
+
+        ui->myOrdersButton->setEnabled(true);
+        ui->myOrdersButton->setText("Мои заказы");
 
         setWindowTitle("Кабинет клиента туристической компании");
     }
@@ -326,4 +337,28 @@ void MainWindow::onOrderButtonClicked()
         "Заказ оформлен",
         "Заказ успешно оформлен.\nНомер заказа: " + QString::number(orderId)
         );
+}
+
+void MainWindow::onMyOrdersButtonClicked()
+{
+    if (m_userRole == "admin") {
+        QMessageBox::warning(
+            this,
+            "Ограничение доступа",
+            "Администратор не может просматривать клиентский список заказов."
+            );
+        return;
+    }
+
+    if (m_clientId <= 0) {
+        QMessageBox::warning(
+            this,
+            "Ошибка пользователя",
+            "Для текущего пользователя не найден клиентский профиль."
+            );
+        return;
+    }
+
+    MyOrdersWindow myOrdersWindow(m_clientId, this);
+    myOrdersWindow.exec();
 }
