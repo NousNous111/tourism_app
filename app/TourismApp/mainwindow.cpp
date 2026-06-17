@@ -10,6 +10,14 @@
 #include <QAbstractItemView>
 #include <QModelIndex>
 #include <QPushButton>
+#include <QDate>
+
+static QString sqlValue(const QString &value)
+{
+    QString escaped = value;
+    escaped.replace("'", "''");
+    return "'" + escaped + "'";
+}
 
 MainWindow::MainWindow(int userId, int clientId, const QString &userRole, QWidget *parent)
     : QMainWindow(parent)
@@ -21,13 +29,14 @@ MainWindow::MainWindow(int userId, int clientId, const QString &userRole, QWidge
 {
     ui->setupUi(this);
 
-    setWindowTitle("Информационная система туристической компании");
-
     connect(ui->refreshButton, &QPushButton::clicked,
             this, &MainWindow::onRefreshButtonClicked);
 
     connect(ui->interestButton, &QPushButton::clicked,
             this, &MainWindow::onInterestButtonClicked);
+
+    connect(ui->orderButton, &QPushButton::clicked,
+            this, &MainWindow::onOrderButtonClicked);
 
     configureInterfaceByRole();
     loadTravelPackages();
@@ -43,10 +52,18 @@ void MainWindow::configureInterfaceByRole()
     if (m_userRole == "admin") {
         ui->interestButton->setEnabled(false);
         ui->interestButton->setText("Недоступно для администратора");
+
+        ui->orderButton->setEnabled(false);
+        ui->orderButton->setText("Заказ недоступен");
+
         setWindowTitle("Панель администратора туристической компании");
     } else {
         ui->interestButton->setEnabled(true);
         ui->interestButton->setText("Заинтересовался");
+
+        ui->orderButton->setEnabled(true);
+        ui->orderButton->setText("Оформить заказ");
+
         setWindowTitle("Кабинет клиента туристической компании");
     }
 }
@@ -132,16 +149,16 @@ void MainWindow::onInterestButtonClicked()
     int packageId = m_packagesModel->data(m_packagesModel->index(row, 0)).toInt();
 
     QSqlQuery query(DatabaseManager::instance().database());
-    query.prepare(
+
+    QString sql =
         "INSERT INTO interested_packages (id_client, id_package) "
-        "VALUES (:id_client, :id_package) "
-        "ON CONFLICT (id_client, id_package) DO NOTHING"
-        );
+        "VALUES (" +
+        QString::number(m_clientId) + ", " +
+        QString::number(packageId) +
+        ") "
+        "ON CONFLICT (id_client, id_package) DO NOTHING";
 
-    query.bindValue(":id_client", m_clientId);
-    query.bindValue(":id_package", packageId);
-
-    if (!query.exec()) {
+    if (!query.exec(sql)) {
         QMessageBox::critical(
             this,
             "Ошибка",
@@ -155,5 +172,158 @@ void MainWindow::onInterestButtonClicked()
         this,
         "Готово",
         "Путевка добавлена в список интересующих."
+        );
+}
+
+void MainWindow::onOrderButtonClicked()
+{
+    if (m_userRole == "admin") {
+        QMessageBox::warning(
+            this,
+            "Ограничение доступа",
+            "Администратор не может оформлять заказы."
+            );
+        return;
+    }
+
+    if (m_clientId <= 0) {
+        QMessageBox::warning(
+            this,
+            "Ошибка пользователя",
+            "Для текущего пользователя не найден клиентский профиль."
+            );
+        return;
+    }
+
+    QModelIndex currentIndex = ui->packagesTableView->currentIndex();
+
+    if (!currentIndex.isValid()) {
+        QMessageBox::warning(
+            this,
+            "Выбор путевки",
+            "Сначала выберите путевку в таблице."
+            );
+        return;
+    }
+
+    int row = currentIndex.row();
+    int packageId = m_packagesModel->data(m_packagesModel->index(row, 0)).toInt();
+    double packagePrice = m_packagesModel->data(m_packagesModel->index(row, 4)).toDouble();
+
+    QDate saleDate = QDate::currentDate();
+    QDate departureDate = saleDate.addDays(14);
+
+    QSqlDatabase database = DatabaseManager::instance().database();
+
+    if (!database.transaction()) {
+        QMessageBox::critical(
+            this,
+            "Ошибка базы данных",
+            "Не удалось начать транзакцию:\n" + database.lastError().text()
+            );
+        return;
+    }
+
+    QSqlQuery insertOrderQuery(database);
+
+    QString insertOrderSql =
+        "INSERT INTO orders "
+        "(id_client, sale_date, departure_date, total_cost, purchased_packages_count) "
+        "VALUES (" +
+        QString::number(m_clientId) + ", " +
+        sqlValue(saleDate.toString("yyyy-MM-dd")) + ", " +
+        sqlValue(departureDate.toString("yyyy-MM-dd")) + ", " +
+        QString::number(packagePrice, 'f', 2) + ", "
+                                                "1"
+                                                ")";
+
+    if (!insertOrderQuery.exec(insertOrderSql)) {
+        database.rollback();
+
+        QMessageBox::critical(
+            this,
+            "Ошибка оформления заказа",
+            "Не удалось создать заказ:\n" +
+                insertOrderQuery.lastError().text()
+            );
+        return;
+    }
+
+    insertOrderQuery.finish();
+
+    QSqlQuery getOrderIdQuery(database);
+
+    QString getOrderIdSql =
+        "SELECT id_order "
+        "FROM orders "
+        "WHERE id_client = " + QString::number(m_clientId) + " "
+                                        "ORDER BY id_order DESC "
+                                        "LIMIT 1";
+
+    if (!getOrderIdQuery.exec(getOrderIdSql)) {
+        database.rollback();
+
+        QMessageBox::critical(
+            this,
+            "Ошибка оформления заказа",
+            "Не удалось получить номер заказа:\n" +
+                getOrderIdQuery.lastError().text()
+            );
+        return;
+    }
+
+    if (!getOrderIdQuery.next()) {
+        database.rollback();
+
+        QMessageBox::critical(
+            this,
+            "Ошибка оформления заказа",
+            "Заказ создан, но его номер не найден."
+            );
+        return;
+    }
+
+    int orderId = getOrderIdQuery.value("id_order").toInt();
+    getOrderIdQuery.finish();
+
+    QSqlQuery insertOrderPackageQuery(database);
+
+    QString insertOrderPackageSql =
+        "INSERT INTO order_packages (id_order, id_package) "
+        "VALUES (" +
+        QString::number(orderId) + ", " +
+        QString::number(packageId) +
+        ")";
+
+    if (!insertOrderPackageQuery.exec(insertOrderPackageSql)) {
+        database.rollback();
+
+        QMessageBox::critical(
+            this,
+            "Ошибка оформления заказа",
+            "Не удалось добавить путевку в заказ:\n" +
+                insertOrderPackageQuery.lastError().text()
+            );
+        return;
+    }
+
+    insertOrderPackageQuery.finish();
+
+    if (!database.commit()) {
+        database.rollback();
+
+        QMessageBox::critical(
+            this,
+            "Ошибка базы данных",
+            "Не удалось сохранить заказ:\n" +
+                database.lastError().text()
+            );
+        return;
+    }
+
+    QMessageBox::information(
+        this,
+        "Заказ оформлен",
+        "Заказ успешно оформлен.\nНомер заказа: " + QString::number(orderId)
         );
 }
