@@ -17,11 +17,37 @@
    <widget class="QTableView" name="packagesTableView">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>0</y>
+      <x>-10</x>
+      <y>50</y>
       <width>801</width>
-      <height>441</height>
+      <height>391</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="refreshButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>100</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Обновить</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="interestButton">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>10</y>
+      <width>100</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Заинтересовался</string>
     </property>
    </widget>
   </widget>

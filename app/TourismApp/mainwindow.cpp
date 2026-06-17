@@ -3,10 +3,13 @@
 #include "database/databasemanager.h"
 
 #include <QSqlQueryModel>
+#include <QSqlQuery>
 #include <QSqlError>
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QAbstractItemView>
+#include <QModelIndex>
+#include <QPushButton>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -16,6 +19,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     setWindowTitle("Информационная система туристической компании");
+
+    connect(ui->refreshButton, &QPushButton::clicked,
+            this, &MainWindow::onRefreshButtonClicked);
+
+    connect(ui->interestButton, &QPushButton::clicked,
+            this, &MainWindow::onInterestButtonClicked);
 
     loadTravelPackages();
 }
@@ -64,4 +73,56 @@ void MainWindow::loadTravelPackages()
     ui->packagesTableView->horizontalHeader()->setStretchLastSection(true);
     ui->packagesTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->packagesTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+}
+
+void MainWindow::onRefreshButtonClicked()
+{
+    loadTravelPackages();
+}
+
+void MainWindow::onInterestButtonClicked()
+{
+    QModelIndex currentIndex = ui->packagesTableView->currentIndex();
+
+    if (!currentIndex.isValid()) {
+        QMessageBox::warning(
+            this,
+            "Выбор путевки",
+            "Сначала выберите путевку в таблице."
+            );
+        return;
+    }
+
+    int row = currentIndex.row();
+    int packageId = m_packagesModel->data(m_packagesModel->index(row, 0)).toInt();
+
+    // Временно используем тестового клиента.
+    // После реализации авторизации здесь будет id текущего клиента.
+    int clientId = 1;
+
+    QSqlQuery query(DatabaseManager::instance().database());
+    query.prepare(
+        "INSERT INTO interested_packages (id_client, id_package) "
+        "VALUES (:id_client, :id_package) "
+        "ON CONFLICT (id_client, id_package) DO NOTHING"
+        );
+
+    query.bindValue(":id_client", clientId);
+    query.bindValue(":id_package", packageId);
+
+    if (!query.exec()) {
+        QMessageBox::critical(
+            this,
+            "Ошибка",
+            "Не удалось добавить путевку в список интересующих:\n" +
+                query.lastError().text()
+            );
+        return;
+    }
+
+    QMessageBox::information(
+        this,
+        "Готово",
+        "Путевка добавлена в список интересующих."
+        );
 }

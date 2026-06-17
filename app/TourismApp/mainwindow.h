@@ -18,6 +18,10 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+private slots:
+    void onRefreshButtonClicked();
+    void onInterestButtonClicked();
+
 private:
     void loadTravelPackages();
 
