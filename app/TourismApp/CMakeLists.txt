@@ -22,6 +22,9 @@ set(PROJECT_SOURCES
         loginwindow.ui
         database/databasemanager.h
         database/databasemanager.cpp
+        registerwindow.h
+        registerwindow.cpp
+        registerwindow.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -29,6 +32,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         loginwindow.h loginwindow.cpp loginwindow.ui
+        registerwindow.h registerwindow.cpp registerwindow.ui
     )
 
 # Define target properties for Android with Qt 6 as:

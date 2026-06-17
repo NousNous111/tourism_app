@@ -1,6 +1,7 @@
 #include "loginwindow.h"
 #include "ui_loginwindow.h"
 #include "database/databasemanager.h"
+#include "registerwindow.h"
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -51,7 +52,10 @@ QString LoginWindow::userRole() const
 QString LoginWindow::hashPassword(const QString &password) const
 {
     QByteArray passwordBytes = password.toUtf8();
-    QByteArray hashBytes = QCryptographicHash::hash(passwordBytes, QCryptographicHash::Sha256);
+    QByteArray hashBytes = QCryptographicHash::hash(
+        passwordBytes,
+        QCryptographicHash::Sha256
+        );
 
     return QString(hashBytes.toHex());
 }
@@ -118,9 +122,6 @@ void LoginWindow::onLoginButtonClicked()
 
 void LoginWindow::onRegisterButtonClicked()
 {
-    QMessageBox::information(
-        this,
-        "Регистрация",
-        "Окно регистрации будет реализовано следующим этапом."
-        );
+    RegisterWindow registerWindow(this);
+    registerWindow.exec();
 }
