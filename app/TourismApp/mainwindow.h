@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QSqlQueryModel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -15,9 +16,14 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow() override;
+    ~MainWindow();
+
+private:
+    void loadHotels();
 
 private:
     Ui::MainWindow *ui;
+    QSqlQueryModel *m_hotelsModel;
 };
+
 #endif // MAINWINDOW_H
