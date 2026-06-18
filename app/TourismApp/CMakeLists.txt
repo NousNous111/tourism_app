@@ -13,43 +13,43 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Sql)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Sql)
 
 set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        mainwindow.ui
-        loginwindow.cpp
-        loginwindow.h
-        loginwindow.ui
-        database/databasemanager.h
-        database/databasemanager.cpp
-        registerwindow.h
-        registerwindow.cpp
-        registerwindow.ui
-        myorderswindow.h
-        myorderswindow.cpp
-        myorderswindow.ui
+    main.cpp
+
+    mainwindow.cpp
+    mainwindow.h
+    mainwindow.ui
+
+    loginwindow.cpp
+    loginwindow.h
+    loginwindow.ui
+
+    registerwindow.cpp
+    registerwindow.h
+    registerwindow.ui
+
+    myorderswindow.cpp
+    myorderswindow.h
+    myorderswindow.ui
+
+    database/databasemanager.h
+    database/databasemanager.cpp
+
+    models/user.h
+
+    controllers/authcontroller.h
+    controllers/authcontroller.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(TourismApp
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        loginwindow.h loginwindow.cpp loginwindow.ui
-        registerwindow.h registerwindow.cpp registerwindow.ui
-        myorderswindow.h myorderswindow.cpp myorderswindow.ui
     )
-
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET TourismApp APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
         add_library(TourismApp SHARED
             ${PROJECT_SOURCES}
         )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
         add_executable(TourismApp
             ${PROJECT_SOURCES}
@@ -57,17 +57,19 @@ else()
     endif()
 endif()
 
+target_include_directories(TourismApp PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 target_link_libraries(TourismApp PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Sql
 )
 
-# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
-# If you are developing for iOS or macOS you should consider setting an
-# explicit, fixed bundle identifier manually though.
 if(${QT_VERSION} VERSION_LESS 6.1.0)
-  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.TourismApp)
+    set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.TourismApp)
 endif()
+
 set_target_properties(TourismApp PROPERTIES
     ${BUNDLE_ID_OPTION}
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
@@ -77,6 +79,7 @@ set_target_properties(TourismApp PROPERTIES
 )
 
 include(GNUInstallDirs)
+
 install(TARGETS TourismApp
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
