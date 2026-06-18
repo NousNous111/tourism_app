@@ -18,6 +18,24 @@ public:
         const QString &phone
         );
 
+    bool loadClientProfile(
+        int clientId,
+        QString &lastName,
+        QString &firstName,
+        QString &patronymic,
+        QString &address,
+        QString &phone
+        );
+
+    bool updateClientProfile(
+        int clientId,
+        const QString &lastName,
+        const QString &firstName,
+        const QString &patronymic,
+        const QString &address,
+        const QString &phone
+        );
+
     QString lastError() const;
 
 private:

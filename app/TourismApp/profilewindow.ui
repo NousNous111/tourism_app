@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>RegisterWindow</class>
- <widget class="QDialog" name="RegisterWindow">
+ <class>ProfileWindow</class>
+ <widget class="QDialog" name="ProfileWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>858</width>
-    <height>448</height>
+    <width>766</width>
+    <height>458</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,34 +16,8 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>130</y>
-     <width>58</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Логин:</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2">
-   <property name="geometry">
-    <rect>
-     <x>50</x>
-     <y>160</y>
-     <width>58</width>
-     <height>16</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Пароль:</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_3">
-   <property name="geometry">
-    <rect>
-     <x>50</x>
-     <y>190</y>
+     <x>190</x>
+     <y>150</y>
      <width>71</width>
      <height>16</height>
     </rect>
@@ -52,11 +26,11 @@
     <string>Фамилия:</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_4">
+  <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>220</y>
+     <x>190</x>
+     <y>180</y>
      <width>58</width>
      <height>16</height>
     </rect>
@@ -65,11 +39,11 @@
     <string>Имя:</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_5">
+  <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>250</y>
+     <x>190</x>
+     <y>210</y>
      <width>71</width>
      <height>16</height>
     </rect>
@@ -78,11 +52,11 @@
     <string>Отчество:</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_6">
+  <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>280</y>
+     <x>190</x>
+     <y>240</y>
      <width>58</width>
      <height>16</height>
     </rect>
@@ -91,11 +65,11 @@
     <string>Адрес:</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_7">
+  <widget class="QLabel" name="label_5">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>310</y>
+     <x>190</x>
+     <y>270</y>
      <width>58</width>
      <height>16</height>
     </rect>
@@ -104,34 +78,11 @@
     <string>Телефон:</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="loginLineEdit">
-   <property name="geometry">
-    <rect>
-     <x>130</x>
-     <y>130</y>
-     <width>201</width>
-     <height>21</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="passwordLineEdit">
-   <property name="geometry">
-    <rect>
-     <x>130</x>
-     <y>160</y>
-     <width>201</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="echoMode">
-    <enum>QLineEdit::EchoMode::Password</enum>
-   </property>
-  </widget>
   <widget class="QLineEdit" name="lastNameLineEdit">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>190</y>
+     <x>280</x>
+     <y>150</y>
      <width>201</width>
      <height>21</height>
     </rect>
@@ -140,18 +91,18 @@
   <widget class="QLineEdit" name="firstNameLineEdit">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>220</y>
+     <x>280</x>
+     <y>180</y>
      <width>201</width>
      <height>21</height>
     </rect>
    </property>
   </widget>
-  <widget class="QLineEdit" name="middleNameLineEdit">
+  <widget class="QLineEdit" name="patronymicLineEdit">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>250</y>
+     <x>280</x>
+     <y>210</y>
      <width>201</width>
      <height>21</height>
     </rect>
@@ -160,8 +111,8 @@
   <widget class="QLineEdit" name="addressLineEdit">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>280</y>
+     <x>280</x>
+     <y>240</y>
      <width>201</width>
      <height>21</height>
     </rect>
@@ -170,37 +121,37 @@
   <widget class="QLineEdit" name="phoneLineEdit">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>310</y>
-     <width>171</width>
+     <x>280</x>
+     <y>270</y>
+     <width>201</width>
      <height>21</height>
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="registerButton">
+  <widget class="QPushButton" name="saveButton">
    <property name="geometry">
     <rect>
-     <x>50</x>
-     <y>370</y>
-     <width>151</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Зарегистрироваться</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="cancelButton">
-   <property name="geometry">
-    <rect>
-     <x>230</x>
-     <y>370</y>
+     <x>240</x>
+     <y>340</y>
      <width>100</width>
      <height>32</height>
     </rect>
    </property>
    <property name="text">
-    <string>Отмена</string>
+    <string>Сохранить</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="closeButton">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>340</y>
+     <width>100</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Закрыть</string>
    </property>
   </widget>
  </widget>

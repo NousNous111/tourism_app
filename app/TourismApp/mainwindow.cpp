@@ -3,6 +3,7 @@
 
 #include "database/databasemanager.h"
 #include "myorderswindow.h"
+#include "profilewindow.h"
 #include "controllers/ordercontroller.h"
 
 #include <QSqlDatabase>
@@ -37,6 +38,9 @@ MainWindow::MainWindow(int userId, int clientId, const QString &userRole, QWidge
     connect(ui->myOrdersButton, &QPushButton::clicked,
             this, &MainWindow::onMyOrdersButtonClicked);
 
+    connect(ui->profileButton, &QPushButton::clicked,
+            this, &MainWindow::onProfileButtonClicked);
+
     configureInterfaceByRole();
     loadTravelPackages();
 }
@@ -58,6 +62,9 @@ void MainWindow::configureInterfaceByRole()
         ui->myOrdersButton->setEnabled(false);
         ui->myOrdersButton->setText("Заказы клиента недоступны");
 
+        ui->profileButton->setEnabled(false);
+        ui->profileButton->setText("Профиль недоступен");
+
         setWindowTitle("Панель администратора туристической компании");
     } else {
         ui->interestButton->setEnabled(true);
@@ -68,6 +75,9 @@ void MainWindow::configureInterfaceByRole()
 
         ui->myOrdersButton->setEnabled(true);
         ui->myOrdersButton->setText("Мои заказы");
+
+        ui->profileButton->setEnabled(true);
+        ui->profileButton->setText("Мой профиль");
 
         setWindowTitle("Кабинет клиента туристической компании");
     }
@@ -256,4 +266,28 @@ void MainWindow::onMyOrdersButtonClicked()
 
     MyOrdersWindow myOrdersWindow(m_clientId, this);
     myOrdersWindow.exec();
+}
+
+void MainWindow::onProfileButtonClicked()
+{
+    if (m_userRole == "admin") {
+        QMessageBox::warning(
+            this,
+            "Ограничение доступа",
+            "Администратор не может редактировать клиентский профиль."
+            );
+        return;
+    }
+
+    if (m_clientId <= 0) {
+        QMessageBox::warning(
+            this,
+            "Ошибка пользователя",
+            "Для текущего пользователя не найден клиентский профиль."
+            );
+        return;
+    }
+
+    ProfileWindow profileWindow(m_clientId, this);
+    profileWindow.exec();
 }
