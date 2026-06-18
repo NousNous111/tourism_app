@@ -46,6 +46,13 @@ set(PROJECT_SOURCES
     profilewindow.cpp
     profilewindow.h
     profilewindow.ui
+
+    adminwindow.cpp
+    adminwindow.h
+    adminwindow.ui
+
+    controllers/admincontroller.h
+    controllers/admincontroller.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -57,6 +64,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         controllers/ordercontroller.h
         controllers/ordercontroller.cpp
         profilewindow.h profilewindow.cpp profilewindow.ui
+        adminwindow.h adminwindow.cpp adminwindow.ui
+        controllers/admincontroller.h
+        controllers/admincontroller.cpp
     )
 else()
     if(ANDROID)

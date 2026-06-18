@@ -4,6 +4,7 @@
 #include "database/databasemanager.h"
 #include "myorderswindow.h"
 #include "profilewindow.h"
+#include "adminwindow.h"
 #include "controllers/ordercontroller.h"
 
 #include <QSqlDatabase>
@@ -41,6 +42,9 @@ MainWindow::MainWindow(int userId, int clientId, const QString &userRole, QWidge
     connect(ui->profileButton, &QPushButton::clicked,
             this, &MainWindow::onProfileButtonClicked);
 
+    connect(ui->adminButton, &QPushButton::clicked,
+            this, &MainWindow::onAdminButtonClicked);
+
     configureInterfaceByRole();
     loadTravelPackages();
 }
@@ -65,6 +69,9 @@ void MainWindow::configureInterfaceByRole()
         ui->profileButton->setEnabled(false);
         ui->profileButton->setText("Профиль недоступен");
 
+        ui->adminButton->setEnabled(true);
+        ui->adminButton->setText("Админ-панель");
+
         setWindowTitle("Панель администратора туристической компании");
     } else {
         ui->interestButton->setEnabled(true);
@@ -78,6 +85,9 @@ void MainWindow::configureInterfaceByRole()
 
         ui->profileButton->setEnabled(true);
         ui->profileButton->setText("Мой профиль");
+
+        ui->adminButton->setEnabled(false);
+        ui->adminButton->setText("Только администратор");
 
         setWindowTitle("Кабинет клиента туристической компании");
     }
@@ -290,4 +300,19 @@ void MainWindow::onProfileButtonClicked()
 
     ProfileWindow profileWindow(m_clientId, this);
     profileWindow.exec();
+}
+
+void MainWindow::onAdminButtonClicked()
+{
+    if (m_userRole != "admin") {
+        QMessageBox::warning(
+            this,
+            "Ограничение доступа",
+            "Админ-панель доступна только администратору."
+            );
+        return;
+    }
+
+    AdminWindow adminWindow(this);
+    adminWindow.exec();
 }

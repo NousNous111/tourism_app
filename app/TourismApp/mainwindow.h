@@ -25,6 +25,7 @@ private slots:
     void onOrderButtonClicked();
     void onMyOrdersButtonClicked();
     void onProfileButtonClicked();
+    void onAdminButtonClicked();
 
 private:
     void loadTravelPackages();
