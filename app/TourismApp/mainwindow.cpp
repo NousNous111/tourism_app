@@ -1,7 +1,9 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+
 #include "database/databasemanager.h"
 #include "myorderswindow.h"
+#include "controllers/ordercontroller.h"
 
 #include <QSqlDatabase>
 #include <QSqlQueryModel>
@@ -12,14 +14,6 @@
 #include <QAbstractItemView>
 #include <QModelIndex>
 #include <QPushButton>
-#include <QDate>
-
-static QString sqlValue(const QString &value)
-{
-    QString escaped = value;
-    escaped.replace("'", "''");
-    return "'" + escaped + "'";
-}
 
 MainWindow::MainWindow(int userId, int clientId, const QString &userRole, QWidget *parent)
     : QMainWindow(parent)
@@ -221,113 +215,13 @@ void MainWindow::onOrderButtonClicked()
     int packageId = m_packagesModel->data(m_packagesModel->index(row, 0)).toInt();
     double packagePrice = m_packagesModel->data(m_packagesModel->index(row, 4)).toDouble();
 
-    QDate saleDate = QDate::currentDate();
-    QDate departureDate = saleDate.addDays(14);
+    OrderController orderController;
 
-    QSqlDatabase database = DatabaseManager::instance().database();
-
-    if (!database.transaction()) {
-        QMessageBox::critical(
-            this,
-            "Ошибка базы данных",
-            "Не удалось начать транзакцию:\n" + database.lastError().text()
-            );
-        return;
-    }
-
-    QSqlQuery insertOrderQuery(database);
-
-    QString insertOrderSql =
-        "INSERT INTO orders "
-        "(id_client, sale_date, departure_date, total_cost, purchased_packages_count) "
-        "VALUES (" +
-        QString::number(m_clientId) + ", " +
-        sqlValue(saleDate.toString("yyyy-MM-dd")) + ", " +
-        sqlValue(departureDate.toString("yyyy-MM-dd")) + ", " +
-        QString::number(packagePrice, 'f', 2) + ", "
-                                                "1"
-                                                ")";
-
-    if (!insertOrderQuery.exec(insertOrderSql)) {
-        database.rollback();
-
+    if (!orderController.createOrder(m_clientId, packageId, packagePrice)) {
         QMessageBox::critical(
             this,
             "Ошибка оформления заказа",
-            "Не удалось создать заказ:\n" +
-                insertOrderQuery.lastError().text()
-            );
-        return;
-    }
-
-    insertOrderQuery.finish();
-
-    QSqlQuery getOrderIdQuery(database);
-
-    QString getOrderIdSql =
-        "SELECT id_order "
-        "FROM orders "
-        "WHERE id_client = " + QString::number(m_clientId) + " "
-                                        "ORDER BY id_order DESC "
-                                        "LIMIT 1";
-
-    if (!getOrderIdQuery.exec(getOrderIdSql)) {
-        database.rollback();
-
-        QMessageBox::critical(
-            this,
-            "Ошибка оформления заказа",
-            "Не удалось получить номер заказа:\n" +
-                getOrderIdQuery.lastError().text()
-            );
-        return;
-    }
-
-    if (!getOrderIdQuery.next()) {
-        database.rollback();
-
-        QMessageBox::critical(
-            this,
-            "Ошибка оформления заказа",
-            "Заказ создан, но его номер не найден."
-            );
-        return;
-    }
-
-    int orderId = getOrderIdQuery.value("id_order").toInt();
-    getOrderIdQuery.finish();
-
-    QSqlQuery insertOrderPackageQuery(database);
-
-    QString insertOrderPackageSql =
-        "INSERT INTO order_packages (id_order, id_package) "
-        "VALUES (" +
-        QString::number(orderId) + ", " +
-        QString::number(packageId) +
-        ")";
-
-    if (!insertOrderPackageQuery.exec(insertOrderPackageSql)) {
-        database.rollback();
-
-        QMessageBox::critical(
-            this,
-            "Ошибка оформления заказа",
-            "Не удалось добавить путевку в заказ:\n" +
-                insertOrderPackageQuery.lastError().text()
-            );
-        return;
-    }
-
-    insertOrderPackageQuery.finish();
-
-    if (!database.commit()) {
-        database.rollback();
-
-        QMessageBox::critical(
-            this,
-            "Ошибка базы данных",
-            "Не удалось сохранить заказ:\n" +
-                database.lastError().text()
+            orderController.lastError()
             );
         return;
     }
@@ -335,7 +229,8 @@ void MainWindow::onOrderButtonClicked()
     QMessageBox::information(
         this,
         "Заказ оформлен",
-        "Заказ успешно оформлен.\nНомер заказа: " + QString::number(orderId)
+        "Заказ успешно оформлен.\nНомер заказа: " +
+            QString::number(orderController.lastCreatedOrderId())
         );
 }
 

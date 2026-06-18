@@ -40,6 +40,8 @@ set(PROJECT_SOURCES
     controllers/authcontroller.cpp
     controllers/clientcontroller.h
     controllers/clientcontroller.cpp
+    controllers/ordercontroller.h
+    controllers/ordercontroller.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -48,6 +50,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         controllers/clientcontroller.h
         controllers/clientcontroller.cpp
+        controllers/ordercontroller.h
+        controllers/ordercontroller.cpp
     )
 else()
     if(ANDROID)

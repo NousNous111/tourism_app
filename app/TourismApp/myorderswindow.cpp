@@ -1,6 +1,7 @@
 #include "myorderswindow.h"
 #include "ui_myorderswindow.h"
 #include "database/databasemanager.h"
+#include "controllers/ordercontroller.h"
 
 #include <QSqlQueryModel>
 #include <QSqlError>
@@ -32,23 +33,10 @@ MyOrdersWindow::~MyOrdersWindow()
 
 void MyOrdersWindow::loadOrders()
 {
+    OrderController orderController;
+
     m_ordersModel->setQuery(
-        "SELECT "
-        "o.id_order, "
-        "o.sale_date, "
-        "o.departure_date, "
-        "h.hotel_name, "
-        "c.country_name, "
-        "tp.duration_days, "
-        "tp.base_price, "
-        "o.total_cost "
-        "FROM orders o "
-        "JOIN order_packages op ON op.id_order = o.id_order "
-        "JOIN travel_packages tp ON tp.id_package = op.id_package "
-        "JOIN hotels h ON h.id_hotel = tp.id_hotel "
-        "JOIN countries c ON c.id_country = h.id_country "
-        "WHERE o.id_client = " + QString::number(m_clientId) + " "
-                                            "ORDER BY o.id_order DESC",
+        orderController.clientOrdersQuery(m_clientId),
         DatabaseManager::instance().database()
         );
 
