@@ -54,6 +54,7 @@ QString AdminController::allPackagesQuery() const
     return
         "SELECT "
         "tp.id_package, "
+        "h.id_hotel, "
         "h.hotel_name, "
         "co.country_name, "
         "tp.duration_days, "
@@ -63,6 +64,76 @@ QString AdminController::allPackagesQuery() const
         "JOIN hotels h ON h.id_hotel = tp.id_hotel "
         "JOIN countries co ON co.id_country = h.id_country "
         "ORDER BY tp.id_package";
+}
+
+bool AdminController::addPackage(
+    int hotelId,
+    int durationDays,
+    double basePrice,
+    const QString &conditions
+    )
+{
+    m_lastError.clear();
+
+    if (hotelId <= 0) {
+        m_lastError = "Некорректный идентификатор отеля.";
+        return false;
+    }
+
+    if (durationDays <= 0) {
+        m_lastError = "Длительность путевки должна быть больше нуля.";
+        return false;
+    }
+
+    if (basePrice <= 0) {
+        m_lastError = "Стоимость путевки должна быть больше нуля.";
+        return false;
+    }
+
+    if (conditions.trimmed().isEmpty()) {
+        m_lastError = "Условия путевки не должны быть пустыми.";
+        return false;
+    }
+
+    QSqlDatabase database = DatabaseManager::instance().database();
+
+    QSqlQuery checkHotelQuery(database);
+    QString checkHotelSql =
+        "SELECT id_hotel "
+        "FROM hotels "
+        "WHERE id_hotel = " + QString::number(hotelId);
+
+    if (!checkHotelQuery.exec(checkHotelSql)) {
+        m_lastError = "Не удалось проверить существование отеля:\n" +
+                      checkHotelQuery.lastError().text();
+        return false;
+    }
+
+    if (!checkHotelQuery.next()) {
+        m_lastError = "Отель с указанным ID не найден.";
+        return false;
+    }
+
+    checkHotelQuery.finish();
+
+    QSqlQuery insertQuery(database);
+    QString insertSql =
+        "INSERT INTO travel_packages "
+        "(id_hotel, duration_days, base_price, conditions) "
+        "VALUES (" +
+        QString::number(hotelId) + ", " +
+        QString::number(durationDays) + ", " +
+        QString::number(basePrice, 'f', 2) + ", " +
+        sqlValue(conditions) +
+        ")";
+
+    if (!insertQuery.exec(insertSql)) {
+        m_lastError = "Не удалось добавить путевку:\n" +
+                      insertQuery.lastError().text();
+        return false;
+    }
+
+    return true;
 }
 
 bool AdminController::deletePackage(int packageId)
@@ -143,4 +214,11 @@ bool AdminController::deletePackage(int packageId)
 QString AdminController::lastError() const
 {
     return m_lastError;
+}
+
+QString AdminController::sqlValue(const QString &value) const
+{
+    QString escaped = value;
+    escaped.replace("'", "''");
+    return "'" + escaped + "'";
 }

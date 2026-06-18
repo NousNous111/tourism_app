@@ -11,6 +11,7 @@
 #include <QPushButton>
 #include <QAbstractItemView>
 #include <QModelIndex>
+#include <QInputDialog>
 
 AdminWindow::AdminWindow(QWidget *parent)
     : QDialog(parent)
@@ -28,6 +29,9 @@ AdminWindow::AdminWindow(QWidget *parent)
 
     connect(ui->refreshButton, &QPushButton::clicked,
             this, &AdminWindow::onRefreshButtonClicked);
+
+    connect(ui->addPackageButton, &QPushButton::clicked,
+            this, &AdminWindow::onAddPackageButtonClicked);
 
     connect(ui->deletePackageButton, &QPushButton::clicked,
             this, &AdminWindow::onDeletePackageButtonClicked);
@@ -132,12 +136,13 @@ void AdminWindow::loadPackages()
         return;
     }
 
-    m_packagesModel->setHeaderData(0, Qt::Horizontal, "ID");
-    m_packagesModel->setHeaderData(1, Qt::Horizontal, "Отель");
-    m_packagesModel->setHeaderData(2, Qt::Horizontal, "Страна");
-    m_packagesModel->setHeaderData(3, Qt::Horizontal, "Дней");
-    m_packagesModel->setHeaderData(4, Qt::Horizontal, "Стоимость");
-    m_packagesModel->setHeaderData(5, Qt::Horizontal, "Условия");
+    m_packagesModel->setHeaderData(0, Qt::Horizontal, "ID путевки");
+    m_packagesModel->setHeaderData(1, Qt::Horizontal, "ID отеля");
+    m_packagesModel->setHeaderData(2, Qt::Horizontal, "Отель");
+    m_packagesModel->setHeaderData(3, Qt::Horizontal, "Страна");
+    m_packagesModel->setHeaderData(4, Qt::Horizontal, "Дней");
+    m_packagesModel->setHeaderData(5, Qt::Horizontal, "Стоимость");
+    m_packagesModel->setHeaderData(6, Qt::Horizontal, "Условия");
 
     ui->packagesTableView->setModel(m_packagesModel);
     ui->packagesTableView->resizeColumnsToContents();
@@ -157,6 +162,92 @@ void AdminWindow::onRefreshButtonClicked()
         "Обновление",
         "Данные успешно обновлены."
         );
+}
+
+void AdminWindow::onAddPackageButtonClicked()
+{
+    bool ok = false;
+
+    int hotelId = QInputDialog::getInt(
+        this,
+        "Добавление путевки",
+        "Введите ID отеля:",
+        1,
+        1,
+        100000,
+        1,
+        &ok
+        );
+
+    if (!ok) {
+        return;
+    }
+
+    int durationDays = QInputDialog::getInt(
+        this,
+        "Добавление путевки",
+        "Введите длительность путевки в днях:",
+        7,
+        1,
+        365,
+        1,
+        &ok
+        );
+
+    if (!ok) {
+        return;
+    }
+
+    double basePrice = QInputDialog::getDouble(
+        this,
+        "Добавление путевки",
+        "Введите стоимость путевки:",
+        10000.00,
+        1.00,
+        10000000.00,
+        2,
+        &ok
+        );
+
+    if (!ok) {
+        return;
+    }
+
+    QString conditions = QInputDialog::getMultiLineText(
+        this,
+        "Добавление путевки",
+        "Введите условия путевки:",
+        "Проживание в отеле, базовый тариф",
+        &ok
+        );
+
+    if (!ok) {
+        return;
+    }
+
+    AdminController adminController;
+
+    if (!adminController.addPackage(
+            hotelId,
+            durationDays,
+            basePrice,
+            conditions
+            )) {
+        QMessageBox::warning(
+            this,
+            "Ошибка добавления",
+            adminController.lastError()
+            );
+        return;
+    }
+
+    QMessageBox::information(
+        this,
+        "Добавление выполнено",
+        "Путевка успешно добавлена."
+        );
+
+    loadPackages();
 }
 
 void AdminWindow::onDeletePackageButtonClicked()

@@ -18,6 +18,7 @@ public:
 
 private slots:
     void onRefreshButtonClicked();
+    void onAddPackageButtonClicked();
     void onDeletePackageButtonClicked();
 
 private:

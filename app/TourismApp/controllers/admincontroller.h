@@ -12,9 +12,19 @@ public:
     QString allOrdersQuery() const;
     QString allPackagesQuery() const;
 
+    bool addPackage(
+        int hotelId,
+        int durationDays,
+        double basePrice,
+        const QString &conditions
+        );
+
     bool deletePackage(int packageId);
 
     QString lastError() const;
+
+private:
+    QString sqlValue(const QString &value) const;
 
 private:
     QString m_lastError;
