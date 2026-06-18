@@ -48,6 +48,7 @@ CREATE TABLE clients (
 -- UNIQUE нужен, чтобы один пользователь не был связан
 -- с несколькими клиентами.
 
+
 CONSTRAINT uq_clients_id_user UNIQUE (id_user),
 
     CONSTRAINT chk_clients_last_name_not_empty
@@ -79,6 +80,7 @@ CREATE TABLE countries (
     CONSTRAINT pk_countries PRIMARY KEY (id_country),
 
 -- Альтернативный ключ из реляционной модели.
+
 
 CONSTRAINT uq_countries_country_name UNIQUE (country_name),
 
@@ -114,6 +116,7 @@ CREATE TABLE hotels (
 -- В одной стране не должно быть двух полностью одинаково
 -- описанных отелей.
 
+
 CONSTRAINT uq_hotels_country_name_address
         UNIQUE (id_country, hotel_name, hotel_address),
 
@@ -135,6 +138,7 @@ CREATE TABLE travel_packages (
     CONSTRAINT pk_travel_packages PRIMARY KEY (id_package),
 
 -- По условию путевки продаются на одну, две или четыре недели.
+
 
 CONSTRAINT chk_travel_packages_duration
         CHECK (duration_days IN (7, 14, 28)),
@@ -176,6 +180,7 @@ CREATE TABLE discounts (
     CONSTRAINT pk_discounts PRIMARY KEY (id_discount),
 
 -- Альтернативный ключ из реляционной модели.
+
 
 CONSTRAINT uq_discounts_discount_name UNIQUE (discount_name),
 

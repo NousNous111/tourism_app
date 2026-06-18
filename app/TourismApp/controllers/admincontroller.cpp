@@ -4,6 +4,7 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
+#include <QStringList>
 
 AdminController::AdminController()
     : m_lastError("")
@@ -64,6 +65,42 @@ QString AdminController::allPackagesQuery() const
         "JOIN hotels h ON h.id_hotel = tp.id_hotel "
         "JOIN countries co ON co.id_country = h.id_country "
         "ORDER BY tp.id_package";
+}
+
+QStringList AdminController::hotelsForComboBox()
+{
+    m_lastError.clear();
+
+    QStringList hotels;
+
+    QSqlQuery query(DatabaseManager::instance().database());
+
+    QString sql =
+        "SELECT "
+        "h.id_hotel, "
+        "h.hotel_name, "
+        "c.country_name "
+        "FROM hotels h "
+        "JOIN countries c ON c.id_country = h.id_country "
+        "ORDER BY h.id_hotel";
+
+    if (!query.exec(sql)) {
+        m_lastError = "Не удалось загрузить список отелей:\n" +
+                      query.lastError().text();
+        return hotels;
+    }
+
+    while (query.next()) {
+        int hotelId = query.value("id_hotel").toInt();
+        QString hotelName = query.value("hotel_name").toString();
+        QString countryName = query.value("country_name").toString();
+
+        hotels.append(
+            QString::number(hotelId) + " — " + hotelName + ", " + countryName
+            );
+    }
+
+    return hotels;
 }
 
 bool AdminController::addPackage(

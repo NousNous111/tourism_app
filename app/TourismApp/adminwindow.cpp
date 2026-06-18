@@ -12,6 +12,7 @@
 #include <QAbstractItemView>
 #include <QModelIndex>
 #include <QInputDialog>
+#include <QStringList>
 
 AdminWindow::AdminWindow(QWidget *parent)
     : QDialog(parent)
@@ -171,20 +172,37 @@ void AdminWindow::onAddPackageButtonClicked()
 {
     bool ok = false;
 
-    int hotelId = QInputDialog::getInt(
+    AdminController adminController;
+
+    QStringList hotels = adminController.hotelsForComboBox();
+
+    if (hotels.isEmpty()) {
+        QMessageBox::warning(
+            this,
+            "Ошибка загрузки отелей",
+            adminController.lastError().isEmpty()
+                ? "Список отелей пуст."
+                : adminController.lastError()
+            );
+        return;
+    }
+
+    QString selectedHotel = QInputDialog::getItem(
         this,
         "Добавление путевки",
-        "Введите ID отеля:",
-        1,
-        1,
-        100000,
-        1,
+        "Выберите отель:",
+        hotels,
+        0,
+        false,
         &ok
         );
 
-    if (!ok) {
+    if (!ok || selectedHotel.isEmpty()) {
         return;
     }
+
+    int separatorIndex = selectedHotel.indexOf(" — ");
+    int hotelId = selectedHotel.left(separatorIndex).toInt();
 
     int durationDays = QInputDialog::getInt(
         this,
@@ -227,8 +245,6 @@ void AdminWindow::onAddPackageButtonClicked()
     if (!ok) {
         return;
     }
-
-    AdminController adminController;
 
     if (!adminController.addPackage(
             hotelId,

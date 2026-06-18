@@ -2,6 +2,7 @@
 #define ADMINCONTROLLER_H
 
 #include <QString>
+#include <QStringList>
 
 class AdminController
 {
@@ -11,6 +12,8 @@ public:
     QString allClientsQuery() const;
     QString allOrdersQuery() const;
     QString allPackagesQuery() const;
+
+    QStringList hotelsForComboBox();
 
     bool addPackage(
         int hotelId,
