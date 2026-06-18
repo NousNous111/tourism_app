@@ -17,10 +17,10 @@
    <widget class="QTableView" name="packagesTableView">
     <property name="geometry">
      <rect>
-      <x>-10</x>
+      <x>0</x>
       <y>50</y>
-      <width>801</width>
-      <height>391</height>
+      <width>761</width>
+      <height>331</height>
      </rect>
     </property>
    </widget>
@@ -29,7 +29,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>100</width>
+      <width>71</width>
       <height>32</height>
      </rect>
     </property>
@@ -40,7 +40,7 @@
    <widget class="QPushButton" name="interestButton">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>90</x>
       <y>10</y>
       <width>131</width>
       <height>32</height>
@@ -53,7 +53,7 @@
    <widget class="QPushButton" name="orderButton">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>230</x>
       <y>10</y>
       <width>131</width>
       <height>32</height>
@@ -92,14 +92,40 @@
    <widget class="QPushButton" name="adminButton">
     <property name="geometry">
      <rect>
-      <x>410</x>
-      <y>10</y>
+      <x>10</x>
+      <y>380</y>
       <width>121</width>
       <height>32</height>
      </rect>
     </property>
     <property name="text">
      <string>Админ-панель</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="logoutButton">
+    <property name="geometry">
+     <rect>
+      <x>640</x>
+      <y>380</y>
+      <width>100</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Выйти</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="interestedButton">
+    <property name="geometry">
+     <rect>
+      <x>380</x>
+      <y>10</y>
+      <width>161</width>
+      <height>32</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Интересующие путевки</string>
     </property>
    </widget>
   </widget>

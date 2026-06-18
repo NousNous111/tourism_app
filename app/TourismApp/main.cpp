@@ -8,31 +8,50 @@
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QApplication application(argc, argv);
 
     if (!DatabaseManager::instance().connectToDatabase()) {
         QMessageBox::critical(
             nullptr,
-            "Ошибка подключения",
-            "Не удалось подключиться к базе данных:\n" +
-                DatabaseManager::instance().lastError()
+            "Ошибка подключения к базе данных",
+            DatabaseManager::instance().lastError()
             );
         return 1;
     }
 
-    LoginWindow loginWindow;
+    while (true) {
+        LoginWindow loginWindow;
 
-    if (loginWindow.exec() != QDialog::Accepted) {
-        return 0;
+        if (loginWindow.exec() != QDialog::Accepted) {
+            break;
+        }
+
+        MainWindow mainWindow(
+            loginWindow.userId(),
+            loginWindow.clientId(),
+            loginWindow.userRole()
+            );
+
+        bool logoutRequested = false;
+
+        QObject::connect(
+            &mainWindow,
+            &MainWindow::logoutRequested,
+            [&logoutRequested]() {
+                logoutRequested = true;
+            }
+            );
+
+        mainWindow.show();
+
+        application.exec();
+
+        if (!logoutRequested) {
+            break;
+        }
     }
 
-    MainWindow w(
-        loginWindow.userId(),
-        loginWindow.clientId(),
-        loginWindow.userRole()
-        );
+    DatabaseManager::instance().closeConnection();
 
-    w.show();
-
-    return QApplication::exec();
+    return 0;
 }

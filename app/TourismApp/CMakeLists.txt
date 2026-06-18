@@ -53,6 +53,10 @@ set(PROJECT_SOURCES
 
     controllers/admincontroller.h
     controllers/admincontroller.cpp
+
+    interestedpackageswindow.h
+    interestedpackageswindow.cpp
+    interestedpackageswindow.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -67,6 +71,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         adminwindow.h adminwindow.cpp adminwindow.ui
         controllers/admincontroller.h
         controllers/admincontroller.cpp
+        interestedpackageswindow.h interestedpackageswindow.cpp interestedpackageswindow.ui
     )
 else()
     if(ANDROID)

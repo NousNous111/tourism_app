@@ -5,6 +5,7 @@
 #include "myorderswindow.h"
 #include "profilewindow.h"
 #include "adminwindow.h"
+#include "interestedpackageswindow.h"
 #include "controllers/ordercontroller.h"
 
 #include <QSqlDatabase>
@@ -33,6 +34,9 @@ MainWindow::MainWindow(int userId, int clientId, const QString &userRole, QWidge
     connect(ui->interestButton, &QPushButton::clicked,
             this, &MainWindow::onInterestButtonClicked);
 
+    connect(ui->interestedButton, &QPushButton::clicked,
+            this, &MainWindow::onInterestedButtonClicked);
+
     connect(ui->orderButton, &QPushButton::clicked,
             this, &MainWindow::onOrderButtonClicked);
 
@@ -45,6 +49,9 @@ MainWindow::MainWindow(int userId, int clientId, const QString &userRole, QWidge
     connect(ui->adminButton, &QPushButton::clicked,
             this, &MainWindow::onAdminButtonClicked);
 
+    connect(ui->logoutButton, &QPushButton::clicked,
+            this, &MainWindow::onLogoutButtonClicked);
+
     configureInterfaceByRole();
     loadTravelPackages();
 }
@@ -56,40 +63,42 @@ MainWindow::~MainWindow()
 
 void MainWindow::configureInterfaceByRole()
 {
+    ui->logoutButton->setText("Выйти");
+    ui->logoutButton->setEnabled(true);
+
+    ui->interestButton->setEnabled(m_clientId > 0);
+    ui->interestButton->setText("Заинтересовался");
+
+    ui->interestedButton->setEnabled(m_clientId > 0);
+    ui->interestedButton->setText("Мои интересующие");
+
+    ui->orderButton->setEnabled(m_clientId > 0);
+    ui->orderButton->setText("Оформить заказ");
+
+    ui->myOrdersButton->setEnabled(m_clientId > 0);
+    ui->myOrdersButton->setText("Мои заказы");
+
+    ui->profileButton->setEnabled(m_clientId > 0);
+    ui->profileButton->setText("Мой профиль");
+
     if (m_userRole == "admin") {
-        ui->interestButton->setEnabled(false);
-        ui->interestButton->setText("Недоступно для администратора");
-
-        ui->orderButton->setEnabled(false);
-        ui->orderButton->setText("Заказ недоступен");
-
-        ui->myOrdersButton->setEnabled(false);
-        ui->myOrdersButton->setText("Заказы клиента недоступны");
-
-        ui->profileButton->setEnabled(false);
-        ui->profileButton->setText("Профиль недоступен");
-
         ui->adminButton->setEnabled(true);
         ui->adminButton->setText("Админ-панель");
 
-        setWindowTitle("Панель администратора туристической компании");
+        setWindowTitle("Кабинет администратора туристической компании");
     } else {
-        ui->interestButton->setEnabled(true);
-        ui->interestButton->setText("Заинтересовался");
-
-        ui->orderButton->setEnabled(true);
-        ui->orderButton->setText("Оформить заказ");
-
-        ui->myOrdersButton->setEnabled(true);
-        ui->myOrdersButton->setText("Мои заказы");
-
-        ui->profileButton->setEnabled(true);
-        ui->profileButton->setText("Мой профиль");
-
         ui->adminButton->setEnabled(false);
         ui->adminButton->setText("Только администратор");
 
         setWindowTitle("Кабинет клиента туристической компании");
+    }
+
+    if (m_clientId <= 0) {
+        ui->interestButton->setText("Нет клиентского профиля");
+        ui->interestedButton->setText("Нет клиентского профиля");
+        ui->orderButton->setText("Нет клиентского профиля");
+        ui->myOrdersButton->setText("Нет клиентского профиля");
+        ui->profileButton->setText("Нет клиентского профиля");
     }
 }
 
@@ -141,15 +150,6 @@ void MainWindow::onRefreshButtonClicked()
 
 void MainWindow::onInterestButtonClicked()
 {
-    if (m_userRole == "admin") {
-        QMessageBox::warning(
-            this,
-            "Ограничение доступа",
-            "Администратор не может добавлять путевки в список интересующих."
-            );
-        return;
-    }
-
     if (m_clientId <= 0) {
         QMessageBox::warning(
             this,
@@ -200,17 +200,23 @@ void MainWindow::onInterestButtonClicked()
         );
 }
 
-void MainWindow::onOrderButtonClicked()
+void MainWindow::onInterestedButtonClicked()
 {
-    if (m_userRole == "admin") {
+    if (m_clientId <= 0) {
         QMessageBox::warning(
             this,
-            "Ограничение доступа",
-            "Администратор не может оформлять заказы."
+            "Ошибка пользователя",
+            "Для текущего пользователя не найден клиентский профиль."
             );
         return;
     }
 
+    InterestedPackagesWindow interestedPackagesWindow(m_clientId, this);
+    interestedPackagesWindow.exec();
+}
+
+void MainWindow::onOrderButtonClicked()
+{
     if (m_clientId <= 0) {
         QMessageBox::warning(
             this,
@@ -256,15 +262,6 @@ void MainWindow::onOrderButtonClicked()
 
 void MainWindow::onMyOrdersButtonClicked()
 {
-    if (m_userRole == "admin") {
-        QMessageBox::warning(
-            this,
-            "Ограничение доступа",
-            "Администратор не может просматривать клиентский список заказов."
-            );
-        return;
-    }
-
     if (m_clientId <= 0) {
         QMessageBox::warning(
             this,
@@ -280,15 +277,6 @@ void MainWindow::onMyOrdersButtonClicked()
 
 void MainWindow::onProfileButtonClicked()
 {
-    if (m_userRole == "admin") {
-        QMessageBox::warning(
-            this,
-            "Ограничение доступа",
-            "Администратор не может редактировать клиентский профиль."
-            );
-        return;
-    }
-
     if (m_clientId <= 0) {
         QMessageBox::warning(
             this,
@@ -315,4 +303,10 @@ void MainWindow::onAdminButtonClicked()
 
     AdminWindow adminWindow(this);
     adminWindow.exec();
+}
+
+void MainWindow::onLogoutButtonClicked()
+{
+    emit logoutRequested();
+    close();
 }

@@ -19,13 +19,18 @@ public:
     explicit MainWindow(int userId, int clientId, const QString &userRole, QWidget *parent = nullptr);
     ~MainWindow();
 
+signals:
+    void logoutRequested();
+
 private slots:
     void onRefreshButtonClicked();
     void onInterestButtonClicked();
+    void onInterestedButtonClicked();
     void onOrderButtonClicked();
     void onMyOrdersButtonClicked();
     void onProfileButtonClicked();
     void onAdminButtonClicked();
+    void onLogoutButtonClicked();
 
 private:
     void loadTravelPackages();
