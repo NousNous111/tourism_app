@@ -2,7 +2,6 @@
 #define REGISTERWINDOW_H
 
 #include <QDialog>
-#include <QString>
 
 namespace Ui {
 class RegisterWindow;
@@ -19,10 +18,6 @@ public:
 private slots:
     void onRegisterButtonClicked();
     void onCancelButtonClicked();
-
-private:
-    bool isPasswordValid(const QString &password) const;
-    QString hashPassword(const QString &password) const;
 
 private:
     Ui::RegisterWindow *ui;

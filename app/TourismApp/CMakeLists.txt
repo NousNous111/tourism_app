@@ -38,12 +38,16 @@ set(PROJECT_SOURCES
 
     controllers/authcontroller.h
     controllers/authcontroller.cpp
+    controllers/clientcontroller.h
+    controllers/clientcontroller.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(TourismApp
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        controllers/clientcontroller.h
+        controllers/clientcontroller.cpp
     )
 else()
     if(ANDROID)
