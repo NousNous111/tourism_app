@@ -18,15 +18,18 @@ public:
 
 private slots:
     void onRefreshButtonClicked();
+    void onDeletePackageButtonClicked();
 
 private:
     void loadClients();
     void loadOrders();
+    void loadPackages();
 
 private:
     Ui::AdminWindow *ui;
     QSqlQueryModel *m_clientsModel;
     QSqlQueryModel *m_ordersModel;
+    QSqlQueryModel *m_packagesModel;
 };
 
 #endif // ADMINWINDOW_H

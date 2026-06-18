@@ -10,12 +10,14 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QAbstractItemView>
+#include <QModelIndex>
 
 AdminWindow::AdminWindow(QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::AdminWindow)
     , m_clientsModel(new QSqlQueryModel(this))
     , m_ordersModel(new QSqlQueryModel(this))
+    , m_packagesModel(new QSqlQueryModel(this))
 {
     ui->setupUi(this);
 
@@ -27,8 +29,12 @@ AdminWindow::AdminWindow(QWidget *parent)
     connect(ui->refreshButton, &QPushButton::clicked,
             this, &AdminWindow::onRefreshButtonClicked);
 
+    connect(ui->deletePackageButton, &QPushButton::clicked,
+            this, &AdminWindow::onDeletePackageButtonClicked);
+
     loadClients();
     loadOrders();
+    loadPackages();
 }
 
 AdminWindow::~AdminWindow()
@@ -107,14 +113,95 @@ void AdminWindow::loadOrders()
     ui->ordersTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
+void AdminWindow::loadPackages()
+{
+    AdminController adminController;
+
+    m_packagesModel->setQuery(
+        adminController.allPackagesQuery(),
+        DatabaseManager::instance().database()
+        );
+
+    if (m_packagesModel->lastError().isValid()) {
+        QMessageBox::critical(
+            this,
+            "Ошибка загрузки путевок",
+            "Не удалось загрузить список путевок:\n" +
+                m_packagesModel->lastError().text()
+            );
+        return;
+    }
+
+    m_packagesModel->setHeaderData(0, Qt::Horizontal, "ID");
+    m_packagesModel->setHeaderData(1, Qt::Horizontal, "Отель");
+    m_packagesModel->setHeaderData(2, Qt::Horizontal, "Страна");
+    m_packagesModel->setHeaderData(3, Qt::Horizontal, "Дней");
+    m_packagesModel->setHeaderData(4, Qt::Horizontal, "Стоимость");
+    m_packagesModel->setHeaderData(5, Qt::Horizontal, "Условия");
+
+    ui->packagesTableView->setModel(m_packagesModel);
+    ui->packagesTableView->resizeColumnsToContents();
+    ui->packagesTableView->horizontalHeader()->setStretchLastSection(true);
+    ui->packagesTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->packagesTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+}
+
 void AdminWindow::onRefreshButtonClicked()
 {
     loadClients();
     loadOrders();
+    loadPackages();
 
     QMessageBox::information(
         this,
         "Обновление",
         "Данные успешно обновлены."
         );
+}
+
+void AdminWindow::onDeletePackageButtonClicked()
+{
+    QModelIndex currentIndex = ui->packagesTableView->currentIndex();
+
+    if (!currentIndex.isValid()) {
+        QMessageBox::warning(
+            this,
+            "Выбор путевки",
+            "Сначала выберите путевку в таблице."
+            );
+        return;
+    }
+
+    int row = currentIndex.row();
+    int packageId = m_packagesModel->data(m_packagesModel->index(row, 0)).toInt();
+
+    int answer = QMessageBox::question(
+        this,
+        "Удаление путевки",
+        "Вы действительно хотите удалить выбранную путевку?",
+        QMessageBox::Yes | QMessageBox::No
+        );
+
+    if (answer != QMessageBox::Yes) {
+        return;
+    }
+
+    AdminController adminController;
+
+    if (!adminController.deletePackage(packageId)) {
+        QMessageBox::warning(
+            this,
+            "Ошибка удаления",
+            adminController.lastError()
+            );
+        return;
+    }
+
+    QMessageBox::information(
+        this,
+        "Удаление выполнено",
+        "Путевка успешно удалена."
+        );
+
+    loadPackages();
 }
