@@ -136,6 +136,59 @@ bool AdminController::addPackage(
     return true;
 }
 
+bool AdminController::updatePackage(
+    int packageId,
+    int durationDays,
+    double basePrice,
+    const QString &conditions
+    )
+{
+    m_lastError.clear();
+
+    if (packageId <= 0) {
+        m_lastError = "Некорректный идентификатор путевки.";
+        return false;
+    }
+
+    if (durationDays <= 0) {
+        m_lastError = "Длительность путевки должна быть больше нуля.";
+        return false;
+    }
+
+    if (basePrice <= 0) {
+        m_lastError = "Стоимость путевки должна быть больше нуля.";
+        return false;
+    }
+
+    if (conditions.trimmed().isEmpty()) {
+        m_lastError = "Условия путевки не должны быть пустыми.";
+        return false;
+    }
+
+    QSqlDatabase database = DatabaseManager::instance().database();
+
+    QSqlQuery query(database);
+    QString sql =
+        "UPDATE travel_packages SET "
+        "duration_days = " + QString::number(durationDays) + ", "
+                                          "base_price = " + QString::number(basePrice, 'f', 2) + ", "
+                                               "conditions = " + sqlValue(conditions) + " "
+                                 "WHERE id_package = " + QString::number(packageId);
+
+    if (!query.exec(sql)) {
+        m_lastError = "Не удалось изменить путевку:\n" +
+                      query.lastError().text();
+        return false;
+    }
+
+    if (query.numRowsAffected() == 0) {
+        m_lastError = "Путевка с указанным ID не найдена.";
+        return false;
+    }
+
+    return true;
+}
+
 bool AdminController::deletePackage(int packageId)
 {
     m_lastError.clear();

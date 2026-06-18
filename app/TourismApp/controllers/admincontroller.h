@@ -19,6 +19,13 @@ public:
         const QString &conditions
         );
 
+    bool updatePackage(
+        int packageId,
+        int durationDays,
+        double basePrice,
+        const QString &conditions
+        );
+
     bool deletePackage(int packageId);
 
     QString lastError() const;

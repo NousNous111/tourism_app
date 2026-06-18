@@ -99,13 +99,26 @@
      <property name="geometry">
       <rect>
        <x>510</x>
-       <y>60</y>
+       <y>100</y>
        <width>131</width>
        <height>32</height>
       </rect>
      </property>
      <property name="text">
       <string>Удалить путевку</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="editPackageButton">
+     <property name="geometry">
+      <rect>
+       <x>510</x>
+       <y>60</y>
+       <width>131</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Изменить путевку</string>
      </property>
     </widget>
    </widget>

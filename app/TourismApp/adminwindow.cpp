@@ -33,6 +33,9 @@ AdminWindow::AdminWindow(QWidget *parent)
     connect(ui->addPackageButton, &QPushButton::clicked,
             this, &AdminWindow::onAddPackageButtonClicked);
 
+    connect(ui->editPackageButton, &QPushButton::clicked,
+            this, &AdminWindow::onEditPackageButtonClicked);
+
     connect(ui->deletePackageButton, &QPushButton::clicked,
             this, &AdminWindow::onDeletePackageButtonClicked);
 
@@ -245,6 +248,95 @@ void AdminWindow::onAddPackageButtonClicked()
         this,
         "Добавление выполнено",
         "Путевка успешно добавлена."
+        );
+
+    loadPackages();
+}
+
+void AdminWindow::onEditPackageButtonClicked()
+{
+    QModelIndex currentIndex = ui->packagesTableView->currentIndex();
+
+    if (!currentIndex.isValid()) {
+        QMessageBox::warning(
+            this,
+            "Выбор путевки",
+            "Сначала выберите путевку в таблице."
+            );
+        return;
+    }
+
+    int row = currentIndex.row();
+
+    int packageId = m_packagesModel->data(m_packagesModel->index(row, 0)).toInt();
+    int currentDurationDays = m_packagesModel->data(m_packagesModel->index(row, 4)).toInt();
+    double currentBasePrice = m_packagesModel->data(m_packagesModel->index(row, 5)).toDouble();
+    QString currentConditions = m_packagesModel->data(m_packagesModel->index(row, 6)).toString();
+
+    bool ok = false;
+
+    int durationDays = QInputDialog::getInt(
+        this,
+        "Изменение путевки",
+        "Введите новую длительность путевки в днях:",
+        currentDurationDays,
+        1,
+        365,
+        1,
+        &ok
+        );
+
+    if (!ok) {
+        return;
+    }
+
+    double basePrice = QInputDialog::getDouble(
+        this,
+        "Изменение путевки",
+        "Введите новую стоимость путевки:",
+        currentBasePrice,
+        1.00,
+        10000000.00,
+        2,
+        &ok
+        );
+
+    if (!ok) {
+        return;
+    }
+
+    QString conditions = QInputDialog::getMultiLineText(
+        this,
+        "Изменение путевки",
+        "Введите новые условия путевки:",
+        currentConditions,
+        &ok
+        );
+
+    if (!ok) {
+        return;
+    }
+
+    AdminController adminController;
+
+    if (!adminController.updatePackage(
+            packageId,
+            durationDays,
+            basePrice,
+            conditions
+            )) {
+        QMessageBox::warning(
+            this,
+            "Ошибка изменения",
+            adminController.lastError()
+            );
+        return;
+    }
+
+    QMessageBox::information(
+        this,
+        "Изменение выполнено",
+        "Путевка успешно изменена."
         );
 
     loadPackages();
