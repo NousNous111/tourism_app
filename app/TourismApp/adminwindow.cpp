@@ -24,6 +24,9 @@ AdminWindow::AdminWindow(QWidget *parent)
     connect(ui->closeButton, &QPushButton::clicked,
             this, &AdminWindow::close);
 
+    connect(ui->refreshButton, &QPushButton::clicked,
+            this, &AdminWindow::onRefreshButtonClicked);
+
     loadClients();
     loadOrders();
 }
@@ -102,4 +105,16 @@ void AdminWindow::loadOrders()
     ui->ordersTableView->horizontalHeader()->setStretchLastSection(true);
     ui->ordersTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->ordersTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+}
+
+void AdminWindow::onRefreshButtonClicked()
+{
+    loadClients();
+    loadOrders();
+
+    QMessageBox::information(
+        this,
+        "Обновление",
+        "Данные успешно обновлены."
+        );
 }

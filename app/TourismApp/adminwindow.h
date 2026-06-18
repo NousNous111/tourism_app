@@ -16,6 +16,9 @@ public:
     explicit AdminWindow(QWidget *parent = nullptr);
     ~AdminWindow();
 
+private slots:
+    void onRefreshButtonClicked();
+
 private:
     void loadClients();
     void loadOrders();
