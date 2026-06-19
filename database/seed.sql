@@ -1,105 +1,12 @@
-TRUNCATE TABLE order_discounts RESTART IDENTITY CASCADE;
-
-TRUNCATE TABLE order_packages RESTART IDENTITY CASCADE;
-
-TRUNCATE TABLE interested_packages RESTART IDENTITY CASCADE;
-
-TRUNCATE TABLE discounts RESTART IDENTITY CASCADE;
-
-TRUNCATE TABLE orders RESTART IDENTITY CASCADE;
-
-TRUNCATE TABLE travel_packages RESTART IDENTITY CASCADE;
-
-TRUNCATE TABLE hotels RESTART IDENTITY CASCADE;
-
-TRUNCATE TABLE countries RESTART IDENTITY CASCADE;
-
-TRUNCATE TABLE clients RESTART IDENTITY CASCADE;
-
-TRUNCATE TABLE users RESTART IDENTITY CASCADE;
-
-INSERT INTO
-    users (login, password_hash, role)
-VALUES (
-        'admin',
-        'hash_admin_123',
-        'admin'
-    ),
-    (
-        'm_orlova',
-        'hash_m_orlova_123',
-        'client'
-    ),
-    (
-        'arseniy_k',
-        'hash_arseniy_k_123',
-        'client'
-    ),
-    (
-        'vika_lavrent',
-        'hash_vika_lavrent_123',
-        'client'
-    ),
-    (
-        'timur_safin',
-        'hash_timur_safin_123',
-        'client'
-    ),
-    (
-        'alisa_berg',
-        'hash_alisa_berg_123',
-        'client'
-    );
-
-INSERT INTO
-    clients (
-        id_user,
-        last_name,
-        first_name,
-        patronymic,
-        address,
-        phone
-    )
-VALUES (
-        2,
-        'Орлова',
-        'Милана',
-        'Романовна',
-        'г. Москва, ул. Покровка, д. 18',
-        '+7-916-482-19-04'
-    ),
-    (
-        3,
-        'Князев',
-        'Арсений',
-        'Владиславович',
-        'г. Санкт-Петербург, ул. Рубинштейна, д. 11',
-        '+7-921-740-58-16'
-    ),
-    (
-        4,
-        'Лаврентьева',
-        'Виктория',
-        'Ильинична',
-        'г. Казань, ул. Кремлевская, д. 25',
-        '+7-987-315-42-90'
-    ),
-    (
-        5,
-        'Сафин',
-        'Тимур',
-        'Эдуардович',
-        'г. Екатеринбург, ул. Малышева, д. 63',
-        '+7-922-604-77-31'
-    ),
-    (
-        6,
-        'Берг',
-        'Алиса',
-        'Данииловна',
-        'г. Нижний Новгород, ул. Большая Покровская, д. 9',
-        '+7-930-118-64-22'
-    );
+TRUNCATE TABLE order_discounts,
+discounts,
+interested_packages,
+order_packages,
+orders,
+travel_packages,
+hotels,
+countries
+RESTART IDENTITY CASCADE;
 
 INSERT INTO
     countries (
@@ -109,33 +16,78 @@ INSERT INTO
     )
 VALUES (
         'Россия',
-        'Умеренный климат, различающийся по регионам; в крупных городах выражены сезонные изменения',
-        'Городской отдых, культурные маршруты, деловые поездки, экскурсии и размещение в отелях разных классов'
-    ),
-    (
-        'Франция',
-        'Умеренный климат, мягкая зима и теплое лето; в Париже комфортные условия для городского туризма',
-        'Экскурсионный отдых, музеи, архитектура, гастрономические маршруты и городские отели'
-    ),
-    (
-        'ОАЭ',
-        'Сухой субтропический климат, высокая температура большую часть года',
-        'Пляжный и городской отдых, отели высокого класса, торговые центры, современная инфраструктура'
+        'Умеренный, на юге субтропический',
+        'Городской, экскурсионный и пляжный отдых на юге страны'
     ),
     (
         'Турция',
-        'Средиземноморский климат: жаркое лето и мягкая зима',
-        'Пляжный отдых, экскурсии, спа-отели, развитая гостиничная инфраструктура'
+        'Средиземноморский и субтропический',
+        'Пляжный отдых, отели all inclusive, экскурсии и семейный туризм'
+    ),
+    (
+        'Египет',
+        'Жаркий пустынный',
+        'Пляжный отдых, Красное море, дайвинг и экскурсии'
+    ),
+    (
+        'ОАЭ',
+        'Жаркий пустынный',
+        'Городской отдых, пляжи, шопинг и современные достопримечательности'
+    ),
+    (
+        'Таиланд',
+        'Тропический муссонный',
+        'Пляжный отдых, острова, экскурсии и оздоровительный туризм'
+    ),
+    (
+        'Кипр',
+        'Средиземноморский',
+        'Пляжный отдых, спокойные курорты и семейный туризм'
+    ),
+    (
+        'Греция',
+        'Средиземноморский',
+        'Пляжный отдых, острова и античные достопримечательности'
+    ),
+    (
+        'Италия',
+        'Средиземноморский',
+        'Экскурсионный туризм, культура, гастрономия и морские курорты'
     ),
     (
         'Испания',
-        'Средиземноморский климат с теплым летом и мягкой зимой',
-        'Городской и пляжный отдых, архитектурные достопримечательности, экскурсии, гастрономия'
+        'Средиземноморский',
+        'Пляжный отдых, экскурсии, островные и городские направления'
     ),
     (
-        'Великобритания',
-        'Умеренный морской климат, мягкая зима, прохладное лето и частые осадки',
-        'Городской туризм, культурные достопримечательности, музеи, исторические районы и деловые поездки'
+        'Франция',
+        'Умеренный и средиземноморский',
+        'Экскурсионный туризм, культурный отдых и Лазурный берег'
+    ),
+    (
+        'Черногория',
+        'Средиземноморский',
+        'Пляжный отдых, горные маршруты и спокойные курорты'
+    ),
+    (
+        'Мальдивы',
+        'Тропический',
+        'Пляжный отдых, островные курорты, дайвинг и романтические туры'
+    ),
+    (
+        'Индонезия',
+        'Экваториальный и тропический',
+        'Пляжный отдых, острова, природа и культурные экскурсии'
+    ),
+    (
+        'Вьетнам',
+        'Тропический и субтропический',
+        'Пляжный отдых, экскурсии, городские и природные маршруты'
+    ),
+    (
+        'Грузия',
+        'Субтропический и умеренный',
+        'Экскурсионный отдых, горы, гастрономия и морское побережье'
     );
 
 INSERT INTO
@@ -145,296 +97,353 @@ INSERT INTO
         hotel_class,
         hotel_address
     )
-VALUES
-    -- Россия
-    (
+VALUES (
         1,
-        'Бета Измайлово',
-        3,
-        'Россия, Москва, Измайловское шоссе, 71к2Б'
+        'Radisson Collection Hotel Moscow',
+        '5 звезд',
+        'Москва, Кутузовский проспект, 2/1'
     ),
     (
         1,
-        'Dionis Art Apartments',
-        4,
-        'Россия, Санкт-Петербург, 2-я Советская улица, 4Б'
-    ),
-
--- Франция
-(
-    2,
-    'Hotel Park Lane Paris',
-    4,
-    'Франция, Париж, VIII округ Парижа, улица Ла Боэти, 4'
-),
-
--- ОАЭ
-(
-    3,
-    'One&Only Royal Mirage',
-    5,
-    'ОАЭ, Дубай, Джумейра, Al Sufouh Road'
-),
-
--- Турция
-(
-    4,
-    'The Artisan Istanbul MGallery',
-    4,
-    'Турция, Стамбул, Бейоглу, улица Инёню, 42А'
-),
-
--- Испания
-(
-    5,
-    'Hg City Suites Barcelona',
-    4,
-    'Испания, Барселона, Via Augusta, 89'
-),
-
--- Великобритания
-(
-    6,
-    'Strand Palace Hotel',
-    4,
-    'Великобритания, Лондон, Strand, 372'
-),
-(
-    3,
-    'Dubai Marina Grand',
-    5,
-    'ОАЭ, Дубай, район Dubai Marina'
-),
-(
-    4,
-    'Sun Garden Hotel',
-    4,
-    'Турция, Кемер, центральная набережная'
-),
-(
-    2,
-    'Rivoli Paris Boutique Hotel',
-    4,
-    'Франция, Париж, улица Риволи, 112'
-);
-
-INSERT INTO
-    travel_packages (
-        id_hotel,
-        duration_days,
-        base_price,
-        conditions
-    )
-VALUES
-    -- Россия
-    (
-        1,
-        7,
-        5400.00,
-        'Проживание в отеле, базовый тариф без питания, самостоятельное прибытие'
+        'Hotel Metropol Moscow',
+        '5 звезд',
+        'Москва, Театральный проезд, 2'
     ),
     (
         1,
-        14,
-        10200.00,
-        'Проживание в отеле, уборка номера, возможность раннего бронирования'
+        'Cosmos Moscow VDNH Hotel',
+        '3 звезды',
+        'Москва, проспект Мира, 150'
+    ),
+    (
+        1,
+        'Отель Санкт-Петербург',
+        '4 звезды',
+        'Санкт-Петербург, Пироговская набережная, 5/2'
+    ),
+    (
+        1,
+        'Swissotel Resort Sochi Kamelia',
+        '5 звезд',
+        'Сочи, Курортный проспект, 89'
     ),
     (
         2,
-        7,
-        8789.00,
-        'Проживание в апартаментах, Wi-Fi, самостоятельное прибытие'
+        'Akra Antalya',
+        '5 звезд',
+        'Анталья, Lara Yolu'
     ),
+    (
+        2,
+        'Rixos Premium Belek',
+        '5 звезд',
+        'Белек, Ileribasi Mevkii'
+    ),
+    (
+        2,
+        'Seven Seas Hotel Life',
+        '5 звезд',
+        'Кемер, Goynuk'
+    ),
+    (
+        3,
+        'Steigenberger Aqua Magic Red Sea',
+        '5 звезд',
+        'Хургада, Yusif Afifi Road'
+    ),
+    (
+        3,
+        'Jaz Aquamarine Resort',
+        '5 звезд',
+        'Хургада, South Sahl Hashish Road'
+    ),
+    (
+        3,
+        'Sultan Gardens Resort',
+        '5 звезд',
+        'Шарм-эш-Шейх, Sharks Bay'
+    ),
+    (
+        4,
+        'Rove Downtown Dubai',
+        '3 звезды',
+        'Дубай, 312 Al Mustaqbal Street'
+    ),
+    (
+        4,
+        'Atlantis The Palm',
+        '5 звезд',
+        'Дубай, Crescent Road, The Palm Jumeirah'
+    ),
+    (
+        4,
+        'Jumeirah Beach Hotel',
+        '5 звезд',
+        'Дубай, Jumeirah Street'
+    ),
+    (
+        5,
+        'Novotel Phuket Resort',
+        '4 звезды',
+        'Пхукет, Patong Beach'
+    ),
+    (
+        5,
+        'Centara Grand Beach Resort Phuket',
+        '5 звезд',
+        'Пхукет, Karon Beach'
+    ),
+    (
+        5,
+        'Amari Pattaya',
+        '5 звезд',
+        'Паттайя, Beach Road'
+    ),
+    (
+        6,
+        'Nissi Beach Resort',
+        '4 звезды',
+        'Айя-Напа, Nissi Avenue'
+    ),
+    (
+        6,
+        'Mediterranean Beach Hotel',
+        '4 звезды',
+        'Лимассол, Amathus Avenue'
+    ),
+    (
+        7,
+        'Electra Palace Athens',
+        '5 звезд',
+        'Афины, Navarchou Nikodimou Street'
+    ),
+    (
+        7,
+        'Mitsis Grand Hotel',
+        '5 звезд',
+        'Родос, Akti Miaouli'
+    ),
+    (
+        7,
+        'Creta Maris Resort',
+        '5 звезд',
+        'Крит, Херсониссос'
+    ),
+    (
+        8,
+        'Hotel Artemide',
+        '4 звезды',
+        'Рим, Via Nazionale'
+    ),
+    (
+        8,
+        'Starhotels Michelangelo Florence',
+        '4 звезды',
+        'Флоренция, Viale Fratelli Rosselli'
+    ),
+    (
+        8,
+        'Hotel Principe Venice',
+        '4 звезды',
+        'Венеция, Lista di Spagna'
+    ),
+    (
+        9,
+        'Hotel Regina Barcelona',
+        '4 звезды',
+        'Барселона, Carrer de Bergara'
+    ),
+    (
+        9,
+        'Melia Alicante',
+        '4 звезды',
+        'Аликанте, Plaza del Puerto'
+    ),
+    (
+        9,
+        'Iberostar Selection Playa de Palma',
+        '5 звезд',
+        'Майорка, Playa de Palma'
+    ),
+    (
+        10,
+        'Hotel Eiffel Blomet',
+        '4 звезды',
+        'Париж, Rue Blomet'
+    ),
+    (
+        10,
+        'Novotel Paris Centre Tour Eiffel',
+        '4 звезды',
+        'Париж, Quai de Grenelle'
+    ),
+    (
+        10,
+        'Hotel Nice Riviera',
+        '4 звезды',
+        'Ницца, Rue Pastorelli'
+    ),
+    (
+        11,
+        'Splendid Conference & Spa Resort',
+        '5 звезд',
+        'Будва, Becici'
+    ),
+    (
+        11,
+        'Hotel Montenegro Beach Resort',
+        '4 звезды',
+        'Бечичи, Budva Riviera'
+    ),
+    (
+        12,
+        'Sun Siyam Olhuveli',
+        '5 звезд',
+        'Мальдивы, South Male Atoll'
+    ),
+    (
+        12,
+        'Paradise Island Resort & Spa',
+        '5 звезд',
+        'Мальдивы, Lankanfinolhu'
+    ),
+    (
+        13,
+        'Grand Hyatt Bali',
+        '5 звезд',
+        'Бали, Nusa Dua'
+    ),
+    (
+        13,
+        'Bali Dynasty Resort',
+        '5 звезд',
+        'Бали, Kuta'
+    ),
+    (
+        14,
+        'Vinpearl Resort Nha Trang',
+        '5 звезд',
+        'Нячанг, Hon Tre Island'
+    ),
+    (
+        14,
+        'Muong Thanh Luxury Da Nang',
+        '5 звезд',
+        'Дананг, Vo Nguyen Giap Street'
+    ),
+    (
+        15,
+        'Rooms Hotel Tbilisi',
+        '4 звезды',
+        'Тбилиси, Kostava Street'
+    ),
+    (
+        15,
+        'Radisson Blu Hotel Batumi',
+        '5 звезд',
+        'Батуми, Ninoshvili Street'
+    );
 
--- Франция
-(
-    3,
-    7,
-    36765.00,
-    'Перелет, проживание, завтраки, медицинская страховка'
-),
-(
-    3,
-    14,
-    70500.00,
-    'Перелет, проживание, завтраки, экскурсионная программа по Парижу'
-),
-(
-    10,
-    7,
-    42500.00,
-    'Перелет, проживание, завтраки, обзорная экскурсия'
-),
 
--- ОАЭ
-(
-    4,
-    7,
-    19956.00,
-    'Проживание в отеле, частный пляж, бассейн, самостоятельный перелет'
+WITH hotel_base AS (
+    SELECT
+        h.id_hotel,
+        h.hotel_class,
+        h.id_country,
+        row_number() OVER (ORDER BY h.id_hotel) AS rn,
+        CASE c.country_name
+            WHEN 'Россия' THEN 36000
+            WHEN 'Турция' THEN 78000
+            WHEN 'Египет' THEN 72000
+            WHEN 'ОАЭ' THEN 105000
+            WHEN 'Таиланд' THEN 98000
+            WHEN 'Кипр' THEN 82000
+            WHEN 'Греция' THEN 95000
+            WHEN 'Италия' THEN 108000
+            WHEN 'Испания' THEN 98000
+            WHEN 'Франция' THEN 112000
+            WHEN 'Черногория' THEN 76000
+            WHEN 'Мальдивы' THEN 240000
+            WHEN 'Индонезия' THEN 128000
+            WHEN 'Вьетнам' THEN 92000
+            WHEN 'Грузия' THEN 52000
+            ELSE 70000
+        END AS country_base,
+        CASE
+            WHEN h.hotel_class LIKE '5%' THEN 5
+            WHEN h.hotel_class LIKE '4%' THEN 4
+            WHEN h.hotel_class LIKE '3%' THEN 3
+            ELSE 3
+        END AS class_value
+    FROM hotels h
+    JOIN countries c ON c.id_country = h.id_country
 ),
-(
-    4,
-    14,
-    38900.00,
-    'Проживание в отеле, частный пляж, спа-зона, трансфер'
-),
-(
-    8,
-    7,
-    125000.00,
-    'Перелет, проживание, завтраки, медицинская страховка'
-),
+package_rows AS (
+    SELECT
+        id_hotel,
+        7 AS duration_days,
+        (country_base + class_value * 7000 + (rn % 4) * 3500)::NUMERIC(10, 2) AS base_price,
+        CASE
+            WHEN class_value >= 5 THEN 'Проживание 7 дней, завтраки включены, трансфер, медицинская страховка'
+            WHEN class_value = 4 THEN 'Проживание 7 дней, завтраки включены, групповая экскурсия'
+            ELSE 'Проживание 7 дней, базовый тариф, медицинская страховка'
+        END AS conditions
+    FROM hotel_base
 
--- Турция
-(
-    5,
-    7,
-    8695.00,
-    'Проживание в отеле, спа-зона, тренажерный зал, самостоятельный перелет'
-),
-(
-    5,
-    14,
-    16400.00,
-    'Проживание в отеле, завтраки, трансфер до отеля'
-),
-(
-    9,
-    7,
-    72000.00,
-    'Перелет, проживание, завтраки, групповой трансфер'
-),
+    UNION ALL
 
--- Испания
-(
-    6,
-    7,
-    13746.00,
-    'Проживание в отеле, Wi-Fi, самостоятельное прибытие'
-),
-(
-    6,
-    14,
-    26400.00,
-    'Проживание в отеле, завтраки, экскурсия по Барселоне'
-),
+    SELECT
+        id_hotel,
+        14 AS duration_days,
+        ROUND((country_base + class_value * 7000 + (rn % 4) * 3500) * 1.85, 2)::NUMERIC(10, 2) AS base_price,
+        CASE
+            WHEN class_value >= 5 THEN 'Проживание 14 дней, завтраки включены, трансфер, экскурсионная программа'
+            WHEN class_value = 4 THEN 'Проживание 14 дней, завтраки включены, трансфер'
+            ELSE 'Проживание 14 дней, базовый тариф, медицинская страховка'
+        END AS conditions
+    FROM hotel_base
 
--- Великобритания
-(
-    7,
-    7,
-    41651.00,
-    'Перелет, проживание, завтраки, медицинская страховка'
-),
-(
-    7,
-    14,
-    79500.00,
-    'Перелет, проживание, завтраки, экскурсионная программа по Лондону'
-);
+    UNION ALL
+
+    SELECT
+        id_hotel,
+        28 AS duration_days,
+        ROUND((country_base + class_value * 7000 + (rn % 4) * 3500) * 3.40, 2)::NUMERIC(10, 2) AS base_price,
+        CASE
+            WHEN class_value >= 5 THEN 'Проживание 28 дней, завтраки включены, индивидуальный трансфер, расширенная страховка'
+            WHEN class_value = 4 THEN 'Проживание 28 дней, завтраки включены, трансфер, расширенная страховка'
+            ELSE 'Проживание 28 дней, базовый тариф, расширенная страховка'
+        END AS conditions
+    FROM hotel_base
+    WHERE rn <= 20
+)
+INSERT INTO travel_packages (id_hotel, duration_days, base_price, conditions)
+SELECT
+    id_hotel,
+    duration_days,
+    base_price,
+    conditions
+FROM package_rows
+ORDER BY id_hotel, duration_days;
 
 INSERT INTO
     discounts (
         discount_name,
-        provision_conditions,
+        discount_condition,
         discount_percent
     )
 VALUES (
-        'Скидка за несколько путевок',
-        'Предоставляется при покупке более одной путевки в рамках одного заказа',
-        5.00
-    ),
-    (
-        'Скидка постоянного клиента',
-        'Предоставляется клиентам, ранее оформлявшим заказы в туристической компании',
-        7.00
-    ),
-    (
-        'Сезонная скидка',
-        'Предоставляется в период действия сезонной акции',
+        'Скидка за количество путевок',
+        'Предоставляется при покупке более двух путевок в одном заказе',
         10.00
     ),
     (
-        'Скидка раннего бронирования',
-        'Предоставляется при оформлении заказа заранее до даты отправления',
-        8.00
+        'Скидка за сумму заказа',
+        'Предоставляется при сумме заказа от 100000 рублей',
+        5.00
+    ),
+    (
+        'Скидка за одну страну',
+        'Предоставляется, если все путевки в заказе относятся к одной стране',
+        2.00
     );
-
-INSERT INTO
-    orders (
-        id_client,
-        sale_date,
-        departure_date,
-        total_cost,
-        purchased_packages_count
-    )
-VALUES (
-        1,
-        DATE '2026-04-10',
-        DATE '2026-06-01',
-        14858.00,
-        2
-    ),
-    (
-        2,
-        DATE '2026-04-12',
-        DATE '2026-06-15',
-        36765.00,
-        1
-    ),
-    (
-        3,
-        DATE '2026-04-20',
-        DATE '2026-07-05',
-        55856.00,
-        2
-    ),
-    (
-        4,
-        DATE '2026-05-01',
-        DATE '2026-08-01',
-        41651.00,
-        1
-    ),
-    (
-        5,
-        DATE '2026-05-08',
-        DATE '2026-08-20',
-        115850.00,
-        2
-    );
-
-INSERT INTO
-    interested_packages (id_client, id_package)
-VALUES (1, 1),
-    (1, 3),
-    (1, 13),
-    (2, 4),
-    (2, 5),
-    (3, 7),
-    (3, 10),
-    (4, 15),
-    (4, 16),
-    (5, 8),
-    (5, 14);
-
-INSERT INTO
-    order_packages (id_order, id_package)
-VALUES (1, 1),
-    (1, 3),
-    (2, 4),
-    (3, 7),
-    (3, 10),
-    (4, 15),
-    (5, 5),
-    (5, 14);
-
-INSERT INTO
-    order_discounts (id_discount, id_order)
-VALUES (1, 1),
-    (4, 1),
-    (3, 2),
-    (1, 3),
-    (2, 3),
-    (4, 5);
