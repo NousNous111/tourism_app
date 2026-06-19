@@ -163,6 +163,7 @@ CREATE TABLE orders (
     departure_date DATE NOT NULL,
     total_cost NUMERIC(12, 2) NOT NULL,
     purchased_packages_count INTEGER NOT NULL,
+    discount_percent NUMERIC(5, 2) NOT NULL DEFAULT 0,
     CONSTRAINT pk_orders PRIMARY KEY (id_order),
     CONSTRAINT chk_orders_total_cost CHECK (total_cost >= 0),
     CONSTRAINT chk_orders_purchased_packages_count CHECK (purchased_packages_count > 0),

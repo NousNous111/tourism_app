@@ -2,6 +2,7 @@
 #include "ui_interestedpackageswindow.h"
 
 #include "database/databasemanager.h"
+#include "controllers/ordercontroller.h"
 
 #include <QSqlQueryModel>
 #include <QSqlQuery>
@@ -11,6 +12,9 @@
 #include <QPushButton>
 #include <QAbstractItemView>
 #include <QModelIndex>
+#include <QItemSelectionModel>
+#include <QList>
+#include <QStringList>
 
 InterestedPackagesWindow::InterestedPackagesWindow(int clientId, QWidget *parent)
     : QDialog(parent)
@@ -27,6 +31,9 @@ InterestedPackagesWindow::InterestedPackagesWindow(int clientId, QWidget *parent
 
     connect(ui->removeButton, &QPushButton::clicked,
             this, &InterestedPackagesWindow::onRemoveButtonClicked);
+
+    connect(ui->orderButton, &QPushButton::clicked,
+            this, &InterestedPackagesWindow::onOrderButtonClicked);
 
     loadInterestedPackages();
 }
@@ -88,7 +95,90 @@ void InterestedPackagesWindow::loadInterestedPackages()
     ui->interestedPackagesTableView->resizeColumnsToContents();
     ui->interestedPackagesTableView->horizontalHeader()->setStretchLastSection(true);
     ui->interestedPackagesTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->interestedPackagesTableView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     ui->interestedPackagesTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+}
+
+void InterestedPackagesWindow::onOrderButtonClicked()
+{
+    if (m_clientId <= 0) {
+        QMessageBox::warning(
+            this,
+            "Ошибка пользователя",
+            "Для текущего пользователя не найден клиентский профиль."
+            );
+        return;
+    }
+
+    QModelIndexList selectedRows =
+        ui->interestedPackagesTableView->selectionModel()->selectedRows(0);
+
+    if (selectedRows.isEmpty()) {
+        QMessageBox::warning(
+            this,
+            "Выбор путевок",
+            "Выберите одну или несколько путевок для оформления заказа."
+            );
+        return;
+    }
+
+    QList<int> packageIds;
+
+    for (const QModelIndex &index : selectedRows) {
+        int packageId = m_interestedModel->data(index).toInt();
+        packageIds.append(packageId);
+    }
+
+    int answer = QMessageBox::question(
+        this,
+        "Оформление заказа",
+        "Оформить заказ из выбранных путевок?",
+        QMessageBox::Yes | QMessageBox::No
+        );
+
+    if (answer != QMessageBox::Yes) {
+        return;
+    }
+
+    OrderController orderController;
+
+    if (!orderController.createOrderFromPackages(m_clientId, packageIds)) {
+        QMessageBox::critical(
+            this,
+            "Ошибка оформления заказа",
+            orderController.lastError()
+            );
+        return;
+    }
+
+    QString message =
+        "Заказ успешно оформлен.\n"
+        "Номер заказа: " + QString::number(orderController.lastCreatedOrderId()) + "\n"
+                                                                  "Скидка: " + QString::number(orderController.lastDiscountPercent(), 'f', 2) + "%\n"
+                                                                           "Итоговая стоимость: " + QString::number(orderController.lastTotalCost(), 'f', 2);
+
+    QMessageBox::information(
+        this,
+        "Заказ оформлен",
+        message
+        );
+
+    QStringList ids;
+
+    for (int packageId : packageIds) {
+        ids.append(QString::number(packageId));
+    }
+
+    QSqlQuery deleteQuery(DatabaseManager::instance().database());
+
+    QString deleteSql =
+        "DELETE FROM interested_packages "
+        "WHERE id_client = " + QString::number(m_clientId) + " "
+                                        "AND id_package IN (" + ids.join(", ") + ")";
+
+    deleteQuery.exec(deleteSql);
+
+    loadInterestedPackages();
 }
 
 void InterestedPackagesWindow::onRemoveButtonClicked()

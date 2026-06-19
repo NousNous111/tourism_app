@@ -40,7 +40,7 @@
    </property>
    <widget class="QWidget" name="Clients">
     <attribute name="title">
-     <string>Tab 1</string>
+     <string>Клиенты</string>
     </attribute>
     <widget class="QTableView" name="clientsTableView">
      <property name="geometry">
@@ -55,7 +55,7 @@
    </widget>
    <widget class="QWidget" name="Orders">
     <attribute name="title">
-     <string>Tab 2</string>
+     <string>Заказы</string>
     </attribute>
     <widget class="QTableView" name="ordersTableView">
      <property name="geometry">
@@ -70,7 +70,7 @@
    </widget>
    <widget class="QWidget" name="tab">
     <attribute name="title">
-     <string>Страница</string>
+     <string>Путевки</string>
     </attribute>
     <widget class="QTableView" name="packagesTableView">
      <property name="geometry">

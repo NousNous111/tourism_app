@@ -17,6 +17,7 @@ public:
     ~InterestedPackagesWindow();
 
 private slots:
+    void onOrderButtonClicked();
     void onRemoveButtonClicked();
 
 private:

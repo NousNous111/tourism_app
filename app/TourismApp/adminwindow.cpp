@@ -109,10 +109,12 @@ void AdminWindow::loadOrders()
     m_ordersModel->setHeaderData(3, Qt::Horizontal, "Имя");
     m_ordersModel->setHeaderData(4, Qt::Horizontal, "Дата продажи");
     m_ordersModel->setHeaderData(5, Qt::Horizontal, "Дата выезда");
-    m_ordersModel->setHeaderData(6, Qt::Horizontal, "Отель");
-    m_ordersModel->setHeaderData(7, Qt::Horizontal, "Страна");
-    m_ordersModel->setHeaderData(8, Qt::Horizontal, "Дней");
-    m_ordersModel->setHeaderData(9, Qt::Horizontal, "Сумма");
+    m_ordersModel->setHeaderData(6, Qt::Horizontal, "Отели");
+    m_ordersModel->setHeaderData(7, Qt::Horizontal, "Страны");
+    m_ordersModel->setHeaderData(8, Qt::Horizontal, "Всего дней");
+    m_ordersModel->setHeaderData(9, Qt::Horizontal, "Сумма до скидки");
+    m_ordersModel->setHeaderData(10, Qt::Horizontal, "Скидка, %");
+    m_ordersModel->setHeaderData(11, Qt::Horizontal, "Итого");
 
     ui->ordersTableView->setModel(m_ordersModel);
     ui->ordersTableView->resizeColumnsToContents();
