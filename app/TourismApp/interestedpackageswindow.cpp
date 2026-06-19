@@ -4,11 +4,13 @@
 #include "database/databasemanager.h"
 
 #include <QSqlQueryModel>
+#include <QSqlQuery>
 #include <QSqlError>
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QPushButton>
 #include <QAbstractItemView>
+#include <QModelIndex>
 
 InterestedPackagesWindow::InterestedPackagesWindow(int clientId, QWidget *parent)
     : QDialog(parent)
@@ -22,6 +24,9 @@ InterestedPackagesWindow::InterestedPackagesWindow(int clientId, QWidget *parent
 
     connect(ui->closeButton, &QPushButton::clicked,
             this, &InterestedPackagesWindow::close);
+
+    connect(ui->removeButton, &QPushButton::clicked,
+            this, &InterestedPackagesWindow::onRemoveButtonClicked);
 
     loadInterestedPackages();
 }
@@ -84,4 +89,66 @@ void InterestedPackagesWindow::loadInterestedPackages()
     ui->interestedPackagesTableView->horizontalHeader()->setStretchLastSection(true);
     ui->interestedPackagesTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->interestedPackagesTableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+}
+
+void InterestedPackagesWindow::onRemoveButtonClicked()
+{
+    if (m_clientId <= 0) {
+        QMessageBox::warning(
+            this,
+            "Ошибка пользователя",
+            "Для текущего пользователя не найден клиентский профиль."
+            );
+        return;
+    }
+
+    QModelIndex currentIndex = ui->interestedPackagesTableView->currentIndex();
+
+    if (!currentIndex.isValid()) {
+        QMessageBox::warning(
+            this,
+            "Выбор путевки",
+            "Сначала выберите путевку в таблице."
+            );
+        return;
+    }
+
+    int row = currentIndex.row();
+    int packageId = m_interestedModel->data(m_interestedModel->index(row, 0)).toInt();
+
+    int answer = QMessageBox::question(
+        this,
+        "Удаление из интересующих",
+        "Удалить выбранную путевку из списка интересующих?",
+        QMessageBox::Yes | QMessageBox::No
+        );
+
+    if (answer != QMessageBox::Yes) {
+        return;
+    }
+
+    QSqlQuery query(DatabaseManager::instance().database());
+
+    QString sql =
+        "DELETE FROM interested_packages "
+        "WHERE id_client = " + QString::number(m_clientId) + " "
+                                        "AND id_package = " + QString::number(packageId);
+
+    if (!query.exec(sql)) {
+        QMessageBox::critical(
+            this,
+            "Ошибка удаления",
+            "Не удалось удалить путевку из списка интересующих:\n" +
+                query.lastError().text()
+            );
+        return;
+    }
+
+    QMessageBox::information(
+        this,
+        "Удаление выполнено",
+        "Путевка удалена из списка интересующих."
+        );
+
+    loadInterestedPackages();
 }

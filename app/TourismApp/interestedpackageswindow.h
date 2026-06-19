@@ -16,6 +16,9 @@ public:
     explicit InterestedPackagesWindow(int clientId, QWidget *parent = nullptr);
     ~InterestedPackagesWindow();
 
+private slots:
+    void onRemoveButtonClicked();
+
 private:
     void loadInterestedPackages();
 

@@ -49,6 +49,19 @@
     <string>Закрыть</string>
    </property>
   </widget>
+  <widget class="QPushButton" name="removeButton">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>410</y>
+     <width>201</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Удалить из интересующих</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
